@@ -20,15 +20,42 @@ The total accessing time is the average accessing time multiplied by the length 
 ===== Unless otherwise noted, procedures in this SRFI that return ranges allocate at most O(1) new locations (see R[57]RS section 3.4 for further information). Such ranges are known as compact ranges. Procedures marked as returning expanded ranges allocate at most O(n) locations, where {{n}} is the number of elements in the range.
 ===== This SRFI recommends, but does not require, that Scheme implementations which also provide SRFI 42 modify it so that the typed generator :range also accepts a single argument which is a range in the sense of this SRFI. This feature should be used with caution, as SRFI 42 loops expect that :range iterates only over exact rationals.
 ===== The following names are used for arguments to procedures:
-====== obj: Any Scheme object.
-====== range: A range object.
-====== pred: A predicate that accepts zero or more arguments.
-====== equal: A predicate that accepts two arguments and returns a boolean value. It is not necessarily an equivalence relation.
-====== length: An exact positive integer.
-====== proc: A procedure that accepts zero or more arguments and returns zero or more values.
-====== list: A Scheme list.
-====== vector: A Scheme vector.
-====== string: A Scheme string.
+
+<parameter>obj</parameter>
+
+Any Scheme object.
+
+<parameter>range</parameter>
+
+A range object.
+
+<parameter>pred</parameter>
+
+A predicate that accepts zero or more arguments.
+
+<parameter>equal</parameter>
+
+A predicate that accepts two arguments and returns a boolean value. It is not necessarily an equivalence relation.
+
+<parameter>length</parameter>
+
+An exact positive integer.
+
+<parameter>proc</parameter>
+
+A procedure that accepts zero or more arguments and returns zero or more values.
+
+<parameter>list</parameter>
+
+A Scheme list.
+
+<parameter>vector</parameter>
+
+A Scheme vector.
+
+<parameter>string</parameter>
+
+A Scheme string.
 ===== It is an error (unless otherwise noted) if the procedures are passed arguments that do not have the type implied by the argument names.
 ==== Constructors
 ===== (range length indexer)
