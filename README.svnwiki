@@ -165,7 +165,7 @@ Returns the nth element of range. It is an error if {{n}} is less than 0 or grea
 
 <procedure>(range-first range)</procedure>
 
-Equivalent (in running time as well) to (range-ref range 0).
+Equivalent (in running time as well) to {{(range-ref range 0)}}.
 ====== Example
 <enscript highlight="scheme">
 (range-first (numeric-range 10 30)) ⇑ 10
@@ -173,7 +173,7 @@ Equivalent (in running time as well) to (range-ref range 0).
 
 <procedure>(range-last range)</procedure>
 
-Equivalent (in running time as well) to (range-ref range (- (range-length range) 1)).
+Equivalent (in running time as well) to {{(range-ref range (- (range-length range) 1))}}.
 ====== Example
 <enscript highlight="scheme">
 (range-last (numeric-range 10 30)) ⇑ 29
@@ -182,7 +182,7 @@ Equivalent (in running time as well) to (range-ref range (- (range-length range)
 
 <procedure>(range-split-at range index)</procedure>
 
-Returns two values: (range-take range index) and (range-drop range index). It is an error if index is not an exact integer between 0 and the length of range, both inclusive. This procedure must run in O(1) time.
+Returns two values: {{(range-take range index)}} and {{(range-drop range index)}}. It is an error if index is not an exact integer between 0 and the length of range, both inclusive. This procedure must run in O(1) time.
 ====== Example
 <enscript highlight="scheme">
 (let-values (((ra rb) (range-split-at (numeric-range 10 20) 5)))
