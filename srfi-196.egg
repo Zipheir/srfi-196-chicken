@@ -1,0 +1,10 @@
+;;; srfi-196.egg -*- Scheme -*- vim: ft=scheme:
+
+((author "John Cowan (text), Wolfgang Corcoran-Mathe (implementation)")
+ (maintainer "Sergey Goldgaber")
+ (synopsis "SRFI-196: Range Objects")
+ (version "0.1")
+ (category lang-exts)
+ (test-dependencies test)
+ (license "MIT")
+ (components (extension srfi-196)))
