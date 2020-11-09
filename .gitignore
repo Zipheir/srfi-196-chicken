@@ -1,6 +1,10 @@
 *~
-*.swp
+\#*#
 *.import.scm
+*.link
+*.log
+*.o
+*.sh
 *.so
+*.swp
 *.types
-salmonella.log
