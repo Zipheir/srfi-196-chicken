@@ -408,6 +408,8 @@ Special thanks to Marc Nieper-Wißkirchen, who provided extensive feedback and i
 ** Author
 *** by John Cowan (text), Wolfgang Corcoran-Mathe (implementation)
 *** Ported to Chicken Scheme 5 by Sergey Goldgaber
+** Version history
+*** 0.1 - Ported to Chicken Scheme 5
 ** Copyright
 © 2020 John Cowan, Wolfgang Corcoran-Mathe.
 
