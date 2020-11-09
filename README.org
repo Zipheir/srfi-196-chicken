@@ -1,70 +1,24 @@
 * SRFI-196: Range Objects
-** Author
-by John Cowan (text), Wolfgang Corcoran-Mathe (implementation)
+** Abstract
+Ranges are collections somewhat similar to vectors, except that they are immutable and have algorithmic representations instead of the uniform per-element data structure of vectors. The storage required is usually less than the size of the same collection stored in a vector and the time needed to reference a particular element is typically less for a range than for the same collection stored in a list. This SRFI defines a large subset of the sequence operations defined on lists, vectors, strings, and other collections. If necessary, a range can be converted to a list, vector, or string of its elements or a generator that will lazily produce each element in the range.
+** Rationale
+One of the most common things to do in programming is to execute a block of code a fixed number of times, with access to the index used for the iteration. Indeed, it is so common that there is generally a standard syntax for providing it, generally involving the keyword for (or if not, as in Fortran and Lisp, the word do). It is also usual to be able to provide a lower bound, (generally defaulting to 0 or 1) as well as a step (generally defaulting to 1) which allows iterations through a sequence of odd numbers, or multiples of 10, or whatever.
 
-Status
+Languages with higher order functions, however, provide a second approach to such loops: construct a sequence of numbers and apply a function to each element of the sequence. SRFI 1's iota and the standard for-each procedures make this easy: (for-each (lambda (i) ...) (iota 0 10)) will execute the expressions represented as ... with i bound to the numbers 0 through 9, as the generated list includes the lower bound and excludes the upper bound.
 
-This SRFI is currently in final status. Here is an explanation of each status that a SRFI can hold. To provide input on this SRFI, please send email to srfi-196@nospam
-srfi.schemers.org. To subscribe to the list, follow these instructions. You can access previous messages via the mailing list archive.
+This approach is less feasible as the number of numbers grows. To iterate a million times involves constructing a list of a million numbers to be iterated over and immediately discarded as garbage. This is not something you want to do in the inner loop of your code. The range objects of this SRFI represent such sequences using (as a rule) a small fixed amount of storage. Using (range-for-each (lambda (i) ...) (numeric-range 0 1000000)) iterates a million times but with less space overhead than iota's list of ten elements. They can be thought of as compactly stored vectors.
 
-  * Received: 2020-05-17
-  * Draft #1 published: 2020-05-17
-  * Draft #2 published: 2020-07-16
-  * Draft #3 published: 2020-07-19
-  * Draft #4 published: 2020-08-26
-  * Draft #5 published: 2020-08-28
-  * Draft #6 published: 2020-08-29
-  * Draft #7 published: 2020-09-01
-  * Draft #8 published: 2020-09-02
-  * Draft #9 published: 2020-09-13
-  * Finalized: 2020-09-17
-  * Revised to fix errata:
-      + 2020-09-27 (The final term in the description of the sequence produced by iota-range was wrong.)
+In addition, there are other sequences besides integers from which a range can be drawn. In particular, inexact numbers can also specify ranges: (numeric-range 0.0 1.0 0.1) specifies the sequence 0.0, 0.1, ... 0.9, at least when inexact numbers are represented as IEEE 754 binary double floats (as is usually the case). Roundoff error is still possible when multiplying, but it is greatly reduced compared to accumulated error by repeated adding.
 
-Abstract
-
-Ranges are collections somewhat similar to vectors, except that they are immutable and have algorithmic representations instead of the uniform per-element data structure
-of vectors. The storage required is usually less than the size of the same collection stored in a vector and the time needed to reference a particular element is typically
-less for a range than for the same collection stored in a list. This SRFI defines a large subset of the sequence operations defined on lists, vectors, strings, and other
-collections. If necessary, a range can be converted to a list, vector, or string of its elements or a generator that will lazily produce each element in the range.
-
-Rationale
-
-One of the most common things to do in programming is to execute a block of code a fixed number of times, with access to the index used for the iteration. Indeed, it is so
-common that there is generally a standard syntax for providing it, generally involving the keyword for (or if not, as in Fortran and Lisp, the word do). It is also usual
-to be able to provide a lower bound, (generally defaulting to 0 or 1) as well as a step (generally defaulting to 1) which allows iterations through a sequence of odd
-numbers, or multiples of 10, or whatever.
-
-Languages with higher order functions, however, provide a second approach to such loops: construct a sequence of numbers and apply a function to each element of the
-sequence. SRFI 1's iota and the standard for-each procedures make this easy: (for-each (lambda (i) ...) (iota 0 10)) will execute the expressions represented as ... with i
-bound to the numbers 0 through 9, as the generated list includes the lower bound and excludes the upper bound.
-
-This approach is less feasible as the number of numbers grows. To iterate a million times involves constructing a list of a million numbers to be iterated over and
-immediately discarded as garbage. This is not something you want to do in the inner loop of your code. The range objects of this SRFI represent such sequences using (as a
-rule) a small fixed amount of storage. Using (range-for-each (lambda (i) ...) (numeric-range 0 1000000)) iterates a million times but with less space overhead than iota's
-list of ten elements. They can be thought of as compactly stored vectors.
-
-In addition, there are other sequences besides integers from which a range can be drawn. In particular, inexact numbers can also specify ranges: (numeric-range 0.0 1.0
-0.1) specifies the sequence 0.0, 0.1, ... 0.9, at least when inexact numbers are represented as IEEE 754 binary double floats (as is usually the case). Roundoff error is
-still possible when multiplying, but it is greatly reduced compared to accumulated error by repeated adding.
-
-The rationale for string-range is to provide efficient random access to strings. There have been many attempts to ensure O(1) reference to string characters, such as
-string cursors, UTF-32 encoding, SRFI 135 texts, immutable strings, and so on. Because the range-ref procedure for a string created through string-range runs in O(1) time
-in the length of the string, a range created by string-range can efficiently access arbitrary characters of the range.
-
-Specification
-
+The rationale for string-range is to provide efficient random access to strings. There have been many attempts to ensure O(1) reference to string characters, such as string cursors, UTF-32 encoding, SRFI 135 texts, immutable strings, and so on. Because the range-ref procedure for a string created through string-range runs in O(1) time in the length of the string, a range created by string-range can efficiently access arbitrary characters of the range.
+** Specification
 Ranges belong to a disjoint type.
 
-Ranges provide certain running time guarantees. With each range, we associate two lengths of time, the average accessing time and the total accessing time. The total
-accessing time is the average accessing time multiplied by the length of the range. In the runtime guarantees below, the time spent in arguments designated by pred, equal,
-or proc is ignored.
+Ranges provide certain running time guarantees. With each range, we associate two lengths of time, the average accessing time and the total accessing time. The total accessing time is the average accessing time multiplied by the length of the range. In the runtime guarantees below, the time spent in arguments designated by pred, equal, or proc is ignored.
 
-Unless otherwise noted, procedures in this SRFI that return ranges allocate at most O(1) new locations (see R[57]RS section 3.4 for further information). Such ranges are
-known as compact ranges. Procedures marked as returning expanded ranges allocate at most O(n) locations, where n is the number of elements in the range.
+Unless otherwise noted, procedures in this SRFI that return ranges allocate at most O(1) new locations (see R[57]RS section 3.4 for further information). Such ranges are known as compact ranges. Procedures marked as returning expanded ranges allocate at most O(n) locations, where n is the number of elements in the range.
 
-This SRFI recommends, but does not require, that Scheme implementations which also provide SRFI 42 modify it so that the typed generator :range also accepts a single
-argument which is a range in the sense of this SRFI. This feature should be used with caution, as SRFI 42 loops expect that :range iterates only over exact rationals.
+This SRFI recommends, but does not require, that Scheme implementations which also provide SRFI 42 modify it so that the typed generator :range also accepts a single argument which is a range in the sense of this SRFI. This feature should be used with caution, as SRFI 42 loops expect that :range iterates only over exact rationals.
 
 The following names are used for arguments to procedures:
 
@@ -87,17 +41,11 @@ vector: A Scheme vector.
 string: A Scheme string.
 
 It is an error (unless otherwise noted) if the procedures are passed arguments that do not have the type implied by the argument names.
-
-Constructors
-
+** Constructors
 (range length indexer)
 
-Returns a range whose length (number of elements) is length. The indexer procedure returns the nth element (where 0 ≤ n < length) of the range, given n. This procedure
-must run in O(1) time. The range returned is compact, although indexer may close over arbitrarily large data structures. The average accessing time of the resulting range
-is the average time needed to run indexer.
-
-Examples:
-
+Returns a range whose length (number of elements) is length. The indexer procedure returns the nth element (where 0 ≤ n < length) of the range, given n. This procedure must run in O(1) time. The range returned is compact, although indexer may close over arbitrarily large data structures. The average accessing time of the resulting range is the average time needed to run indexer.
+*** Examples:
 (range->list (range 26 (lambda (n) (integer->char (+ 65 n)))))
   ⇑ (#\A #\B #\C #\D #\E … #\Z)
 
@@ -163,9 +111,7 @@ maximum of the average accessing times of the ranges.
 (range->list (range-append (numeric-range 0 3)
                            (numeric-range 3 6)))
   ⇑ (0 1 2 3 4 5)
-
-Predicates
-
+** Predicates
 (range? obj)
 
 Returns #t if obj is a range and #f otherwise. This procedure must run in O(1) time.
@@ -180,9 +126,7 @@ is O(s) + O(k), where s is the sum of the total accessing times of the ranges an
 (range=? = (numeric-range 5 10) (numeric-range 6 11)) ⇑ #f
 
 (range=? eqv? (numeric-range 0 0) (range 0 (lambda (i) i))) ⇑ #t
-
-Accessors
-
+** Accessors
 (range-length range)
 
 Returns the length (number of elements) of range. This procedure must run in O(1) time.
@@ -198,8 +142,7 @@ asymptotically equal to the average accessing time of range.
 (range-ref (range 2 (lambda (i) (not (zero? i)))) 1) ⇑ #t
 
 (range-first range)
-
-Equivalent (in running time as well) to (range-ref range 0).
+** Equivalent (in running time as well) to (range-ref range 0).
 
 (range-first (numeric-range 10 30)) ⇑ 10
 
@@ -208,9 +151,7 @@ Equivalent (in running time as well) to (range-ref range 0).
 Equivalent (in running time as well) to (range-ref range (- (range-length range) 1)).
 
 (range-last (numeric-range 10 30)) ⇑ 29
-
-Iteration
-
+** Iteration
 (range-split-at range index)
 
 Returns two values: (range-take range index) and (range-drop range index). It is an error if index is not an exact integer between 0 and the length of range, both
@@ -391,9 +332,7 @@ these procedures must be O(s) where s is the sum of the total accessing times of
                   (numeric-range 3 6)
                   (numeric-range 5 12))
   ⇑ (8 10 12)
-
-Searching
-
+** Searching
 (range-index pred range1 range2... )
 (range-index-right pred range1 range2... )
 
@@ -436,9 +375,7 @@ bounded by the total accessing time of the range. The average accessing time of 
 (range->list (range-drop-while-right (lambda (x) (> x 10))
                                      (numeric-range 5 15)))
   ⇑ (5 6 7 8 9 10)
-
-Conversion
-
+** Conversion
 (range->list range)
 (range->vector range)
 (range->string range)
@@ -468,32 +405,21 @@ asymptotically bounded by the average accessing time of range.
 
 (generator->list (range->generator (numeric-range 0 10)))
   ⇑ (0 1 2 3 4 5 6 7 8 9)
-
-Implementation
-
+** Implementation
 The sample implementation is in the repository of this SRFI and in this .tgz file. An R7RS library file and a separate file containing the actual implementation are
 provided, along with a test file that works with SRFI 78, but is self-contained if SRFI 78 does not exist. The implementation uses SRFI 1 and can take advantage of SRFI
 145 (assume) if it is present.
-
-Acknowledgements
-
+** Acknowledgements
 Without Python's range object, this SRFI would not exist. Thanks also to the contributors on the SRFI 196 mailing list.
 
 Special thanks to Marc Nieper-Wißkirchen, who provided extensive feedback and invaluable insights during the development of this SRFI.
-
-Copyright
-
+** Author
+by John Cowan (text), Wolfgang Corcoran-Mathe (implementation)
+** Copyright
 © 2020 John Cowan, Wolfgang Corcoran-Mathe.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software
-without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice (including the next paragraph) shall be included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
-CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Editor: Arthur A. Gleckler
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
