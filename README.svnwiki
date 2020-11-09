@@ -133,11 +133,11 @@ Returns a range whose elements are the elements of the ranges in order. This pro
 
 <procedure>(range? obj)</procedure>
 
-Returns #t if obj is a range and #f otherwise. This procedure must run in O(1) time.
+Returns {{#t}} if obj is a range and #f otherwise. This procedure must run in O(1) time.
 
 <procedure>(range=? equal range1 range2 ...)</procedure>
 
-Returns #t if all the ranges are of the same length and if their corresponding values are the same in the sense of equal, and #f otherwise. The runtime of this procedure is O(s) + O(k), where s is the sum of the total accessing times of the ranges and {{k}} is the number of ranges.
+Returns {{#t}} if all the ranges are of the same length and if their corresponding values are the same in the sense of equal, and #f otherwise. The runtime of this procedure is O(s) + O(k), where s is the sum of the total accessing times of the ranges and {{k}} is the number of ranges.
 ====== Examples
 <enscript highlight="scheme">
 (range=? = (numeric-range 10 30) (numeric-range 10 30)) ⇑ #t
@@ -268,7 +268,7 @@ Applies {{pred}} element-wise to the elements of the ranges and returns true if 
 
 <procedure>(range-every pred range)</procedure>
 
-Applies {{pred}} element-wise to the elements of the ranges and returns true if {{pred}} returns true on every application. Specifically it returns the last value returned by {{pred}} , or #t if {{pred}} was never invoked. Otherwise, #f is returned. If more than one range is given and not all ranges have the same length, range-every terminates when the shortest range is exhausted. The runtime of this procedure is O(s) + O(k), where s is the sum of the total accessing times of the ranges and {{k}} is the number of ranges.
+Applies {{pred}} element-wise to the elements of the ranges and returns true if {{pred}} returns true on every application. Specifically it returns the last value returned by {{pred}} , or {{#t}} if {{pred}} was never invoked. Otherwise, #f is returned. If more than one range is given and not all ranges have the same length, range-every terminates when the shortest range is exhausted. The runtime of this procedure is O(s) + O(k), where s is the sum of the total accessing times of the ranges and {{k}} is the number of ranges.
 ====== Examples
 <enscript highlight="scheme">
 (range-every integer? (numeric-range 0 10)) ⇑ #t
