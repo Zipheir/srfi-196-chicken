@@ -362,7 +362,7 @@ The range-filter and range-remove procedures eagerly compute their results and r
 <procedure>(range-fold-right kons nil range1 range2 ...)</procedure>
 
 ====== Description
-Folds kons over the elements of ranges in order / reverse order. kons is applied as (kons state (range-ref range1 i) (range-ref range2 i) …) where state is the result of the previous invocation and i is the current index. For the first invocation, nil is used as the first argument. Returns the result of the last invocation, or nil if there was no invocation. If more than one range is given and not all ranges have the same length, these procedures terminate when the shortest range is exhausted. The runtime of these procedures must be O(s) where s is the sum of the total accessing times of the ranges.
+Folds {{kons}} over the elements of ranges in order / reverse order. {{kons}} is applied as ({{kons}} state (range-ref range1 i) (range-ref range2 i) …) where state is the result of the previous invocation and i is the current index. For the first invocation, nil is used as the first argument. Returns the result of the last invocation, or nil if there was no invocation. If more than one range is given and not all ranges have the same length, these procedures terminate when the shortest range is exhausted. The runtime of these procedures must be O(s) where s is the sum of the total accessing times of the ranges.
 ====== Examples
 <enscript highlight="scheme">
 (range-fold (lambda (n _) (+ 1 n)) 0 (numeric-range 0 30))
