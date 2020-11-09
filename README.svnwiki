@@ -61,7 +61,7 @@ A Scheme string.
 
 <procedure>(range length indexer)</procedure>
 
-Returns a range whose length (number of elements) is length. The indexer procedure returns the nth element (where 0 ≤ n < length) of the range, given n. This procedure must run in O(1) time. The range returned is compact, although indexer may close over arbitrarily large data structures. The average accessing time of the resulting range is the average time needed to run indexer.
+Returns a range whose length (number of elements) is length. The indexer procedure returns the nth element (where {{0 ≤ n < length}}) of the range, given {{n}}. This procedure must run in O(1) time. The range returned is compact, although indexer may close over arbitrarily large data structures. The average accessing time of the resulting range is the average time needed to run indexer.
 ====== Examples:
 <enscript highlight="scheme">
 (range->list (range 26 (lambda (n) (integer->char (+ 65 n)))))
@@ -71,13 +71,13 @@ Returns a range whose length (number of elements) is length. The indexer procedu
   ⇑ (1 1/2 1/4 … 1/512)
 </enscript>
 ===== (numeric-range start end [step])
-Returns a numeric range, a special case of a range specified by an inclusive lower bound start, an exclusive upper bound end, and a step value (default 1), all of which can be exact or inexact real numbers.
+Returns a numeric range, a special case of a range specified by an inclusive lower bound {{start}}, an exclusive upper bound {{end}}, and a step value (default 1), all of which can be exact or inexact real numbers.
 
 This constructor produces the sequence
 
  start, (+ start step), (+ start (* 2 step)), …, (+ start (* n step)),
 
-where {{n}} is the greatest integer such that (+ start (* n step)) < end if step is positive, or such that (+ start (* n step)) > end if step is negative. It is is an error if an {{n}} satisfying this condition cannot be determined, or if step is numerically zero. This procedure must run in O(1) time. The average accessing time of the resulting range must be O(1).
+where {{n}} is the greatest integer such that {{(+ start (* n step)) < end}} if step is positive, or such that {{(+ start (* n step)) > end}} if step is negative. It is is an error if an {{n}} satisfying this condition cannot be determined, or if step is numerically zero. This procedure must run in O(1) time. The average accessing time of the resulting range must be O(1).
 
 Note that an effect of this definition is that the elements of a range over inexact numbers are enumerated by multiplying the index by the step value rather than by adding the step value to itself repeatedly. This reduces the likelihood of roundoff errors.
 ====== Examples
@@ -90,7 +90,7 @@ Note that an effect of this definition is that the elements of a range over inex
 
 <procedure>(iota-range length [start [step]])</procedure>
 
-Returns an iota-numeric range, a special case of a range specified by a length (a non-negative exact integer) as well as an inclusive lower bound start (default 0) and a step value (default 1), both of which can be exact or inexact real numbers. This constructor produces the sequence
+Returns an iota-numeric range, a special case of a range specified by a length (a non-negative exact integer) as well as an inclusive lower bound {{start}} (default 0) and a step value (default 1), both of which can be exact or inexact real numbers. This constructor produces the sequence
 
  start, (+ start step), (+ start (* 2 step)), …, (+ start (* (- length 1) step)),
 
@@ -191,7 +191,7 @@ Returns two values: (range-take range index) and (range-drop range index). It is
 
 <procedure>(subrange range start end)</procedure>
 
-Returns a range which contains the elements of range from index start, inclusive, through index end, exclusive. This procedure must run in O(1) time. The average accessing time of the resulting range is asymptotically bounded by the average accessing time of range.
+Returns a range which contains the elements of range from index {{start}}, inclusive, through index {{end}}, exclusive. This procedure must run in O(1) time. The average accessing time of the resulting range is asymptotically bounded by the average accessing time of range.
 ====== Examples
 <enscript highlight="scheme">
 (range->list (subrange (numeric-range 5 15) 5 8))
