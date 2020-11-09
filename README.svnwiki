@@ -16,7 +16,7 @@ The rationale for string-range is to provide efficient random access to strings.
 ===== Ranges belong to a disjoint type.
 ===== Ranges provide certain running time guarantees.
 ===== With each range, we associate two lengths of time, the average accessing time and the total accessing time.
-The total accessing time is the average accessing time multiplied by the length of the range. In the runtime guarantees below, the time spent in arguments designated by {{pred}}, equal, or proc is ignored.
+The total accessing time is the average accessing time multiplied by the length of the range. In the runtime guarantees below, the time spent in arguments designated by {{pred}}, equal, or {{proc}} is ignored.
 ===== Unless otherwise noted, procedures in this SRFI that return ranges allocate at most O(1) new locations (see R[57]RS section 3.4 for further information). Such ranges are known as compact ranges. Procedures marked as returning expanded ranges allocate at most O(n) locations, where {{n}} is the number of elements in the range.
 ===== This SRFI recommends, but does not require, that Scheme implementations which also provide SRFI 42 modify it so that the typed generator :range also accepts a single argument which is a range in the sense of this SRFI. This feature should be used with caution, as SRFI 42 loops expect that :range iterates only over exact rationals.
 ===== The following names are used for arguments to procedures:
@@ -284,7 +284,7 @@ Applies {{pred}} element-wise to the elements of the ranges and returns true if 
 <procedure>(range-map->vector proc range1 range2 ...)</procedure>
 
 ====== Description
-Applies proc element-wise to the elements of the ranges and returns a range/list/vector of the results, in order. If more than one range is given and not all ranges have the same length, these procedures terminate when the shortest range is exhausted. The dynamic order in which proc is actually applied to the elements is unspecified. The runtime of these procedures is O(s) where s is the sum of the total accessing times of the ranges. The range-map procedure eagerly computes its result and returns an expanded range. Its average accessing time is O(1).
+Applies {{proc}} element-wise to the elements of the ranges and returns a range/list/vector of the results, in order. If more than one range is given and not all ranges have the same length, these procedures terminate when the shortest range is exhausted. The dynamic order in which {{proc}} is actually applied to the elements is unspecified. The runtime of these procedures is O(s) where s is the sum of the total accessing times of the ranges. The range-map procedure eagerly computes its result and returns an expanded range. Its average accessing time is O(1).
 ====== Examples
 <enscript highlight="scheme">
 (range->list (range-map square (numeric-range 5 10))) ⇑ (25 36 49 64 81)
@@ -299,7 +299,7 @@ Applies proc element-wise to the elements of the ranges and returns a range/list
 
 <procedure>(range-for-each proc range1 range2 ...)</procedure>
 
-Applies proc element-wise to the elements of the ranges in order. Returns an unspecified result. If more than one range is given and not all ranges have the same length, range-for-each terminates when the shortest range is exhausted. The runtime of this procedure is O(s) where s is the sum of the total accessing times of the ranges.
+Applies {{proc}} element-wise to the elements of the ranges in order. Returns an unspecified result. If more than one range is given and not all ranges have the same length, range-for-each terminates when the shortest range is exhausted. The runtime of this procedure is O(s) where s is the sum of the total accessing times of the ranges.
 ====== Example
 <enscript highlight="scheme">
 (let ((vec (make-vector 5)))
@@ -314,7 +314,7 @@ Applies proc element-wise to the elements of the ranges in order. Returns an uns
 <procedure>(range-filter-map->list proc range1 range2 ...)</procedure>
 
 ====== Description
-Applies proc element-wise to the elements of the ranges and returns a range/list of the true values returned by proc. If more than one range is given and not all ranges have the same length, these procedures terminate when the shortest range is exhausted. The dynamic order in which proc is actually applied to the elements is unspecified. The range-filter-map procedure eagerly computes its result and returns an expanded range. The runtime of these procedures is O(n) where {{n}} is the sum of the total accessing times of the ranges.
+Applies {{proc}} element-wise to the elements of the ranges and returns a range/list of the true values returned by {{proc}}. If more than one range is given and not all ranges have the same length, these procedures terminate when the shortest range is exhausted. The dynamic order in which {{proc}} is actually applied to the elements is unspecified. The range-filter-map procedure eagerly computes its result and returns an expanded range. The runtime of these procedures is O(n) where {{n}} is the sum of the total accessing times of the ranges.
 ====== Examples
 <enscript highlight="scheme">
 (range->list (range-filter-map (lambda (x) (and (even? x) (* x x)))
