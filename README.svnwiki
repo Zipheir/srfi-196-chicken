@@ -214,10 +214,10 @@ Returns a list of ranges representing the consecutive subranges of length length
 </enscript>
 ===== range-take and range-take-right
 ====== Syntax
-#+BEGIN_EXAMPLE
-(range-take range count)
-(range-take-right range count)
-#+END_EXAMPLE
+
+<procedure>(range-take range count)
+
+<procedure>(range-take-right range count)
 ====== Description
 Returns a range which contains the first/last count elements of range. The average accessing time of the resulting ranges is asymptotically bounded by the average accessing time of range.
 ====== Examples
@@ -230,10 +230,10 @@ Returns a range which contains the first/last count elements of range. The avera
 </enscript>
 ===== range-drop and range-drop-right
 ====== Syntax
-#+BEGIN_EXAMPLE
-(range-drop range count)
-(range-drop-right range count)
-#+END_EXAMPLE
+<procedure>(range-drop range count)</procedure>
+
+<procedure>(range-drop-right range count)</procedure>
+
 ====== Description
 Returns a range which contains all except the first/last count elements of range. These procedures must run in O(1) time. The average accessing time of the resulting ranges is asymptotically bounded by the average accessing time respectively of range.
 
@@ -275,11 +275,12 @@ Applies pred element-wise to the elements of the ranges and returns true if pred
 </enscript>
 ===== range-map, range-map->list, and range-map->vector
 ====== Syntax
-#+BEGIN_EXAMPLE
-(range-map proc range1 range2 ...)
-(range-map->list proc range1 range2 ...)
-(range-map->vector proc range1 range2 ...)
-#+END_EXAMPLE
+<procedure>(range-map proc range1 range2 ...)</procedure>
+
+<procedure>(range-map->list proc range1 range2 ...)</procedure>
+
+<procedure>(range-map->vector proc range1 range2 ...)</procedure>
+
 ====== Description
 Applies proc element-wise to the elements of the ranges and returns a range/list/vector of the results, in order. If more than one range is given and not all ranges have the same length, these procedures terminate when the shortest range is exhausted. The dynamic order in which proc is actually applied to the elements is unspecified. The runtime of these procedures is O(s) where s is the sum of the total accessing times of the ranges. The range-map procedure eagerly computes its result and returns an expanded range. Its average accessing time is O(1).
 ====== Examples
@@ -306,10 +307,10 @@ Applies proc element-wise to the elements of the ranges in order. Returns an uns
 </enscript>
 ===== range-filter-map and range-filter-map->list
 ====== Syntax
-#+BEGIN_EXAMPLE
-(range-filter-map proc range1 range2 ...)
-(range-filter-map->list proc range1 range2 ...)
-#+END_EXAMPLE
+<procedure>(range-filter-map proc range1 range2 ...)</procedure>
+
+<procedure>(range-filter-map->list proc range1 range2 ...)</procedure>
+
 ====== Description
 Applies proc element-wise to the elements of the ranges and returns a range/list of the true values returned by proc. If more than one range is given and not all ranges have the same length, these procedures terminate when the shortest range is exhausted. The dynamic order in which proc is actually applied to the elements is unspecified. The range-filter-map procedure eagerly computes its result and returns an expanded range. The runtime of these procedures is O(n) where {{n}} is the sum of the total accessing times of the ranges.
 ====== Examples
@@ -326,12 +327,14 @@ Applies proc element-wise to the elements of the ranges and returns a range/list
 </enscript>
 ===== range-filter, range-filter->list, range-remove, and range->remove->list
 ====== Syntax
-#+BEGIN_EXAMPLE
-(range-filter pred range)
-(range-filter->list pred range)
-(range-remove pred range)
-(range-remove->list pred range)
-#+END_EXAMPLE
+<procedure>(range-filter pred range)</procedure>
+
+<procedure>(range-filter->list pred range)</procedure>
+
+<procedure>(range-remove pred range)</procedure>
+
+<procedure>(range-remove->list pred range)</procedure>
+
 ====== Description
 Returns a range/list containing the elements of range that satisfy / do not satisfy pred. The runtime of these procedures is O(s) where s is the sum of the total accessing times of the ranges.
 
@@ -352,10 +355,10 @@ The range-filter and range-remove procedures eagerly compute their results and r
 </enscript>
 ===== range-fold and range-fold-right
 ====== Syntax
-#+BEGIN_EXAMPLE
-(range-fold kons nil range1 range2 ...)
-(range-fold-right kons nil range1 range2 ...)
-#+END_EXAMPLE
+<procedure>(range-fold kons nil range1 range2 ...)</procedure>
+
+<procedure>(range-fold-right kons nil range1 range2 ...)</procedure>
+
 ====== Description
 Folds kons over the elements of ranges in order / reverse order. kons is applied as (kons state (range-ref range1 i) (range-ref range2 i) …) where state is the result of the previous invocation and i is the current index. For the first invocation, nil is used as the first argument. Returns the result of the last invocation, or nil if there was no invocation. If more than one range is given and not all ranges have the same length, these procedures terminate when the shortest range is exhausted. The runtime of these procedures must be O(s) where s is the sum of the total accessing times of the ranges.
 ====== Examples
@@ -378,10 +381,10 @@ Folds kons over the elements of ranges in order / reverse order. kons is applied
 ==== Searching
 ===== range-index and range-index-right
 ====== Syntax
-#+BEGIN_EXAMPLE
-(range-index pred range1 range2... )
-(range-index-right pred range1 range2... )
-#+END_EXAMPLE
+<procedure>(range-index pred range1 range2... )</procedure>
+
+<procedure>(range-index-right pred range1 range2... )</procedure>
+
 ====== Description
 Applies pred element-wise to the elements of ranges and returns the index of the first/last element at which pred returns true. Otherwise, returns #f. If more than one range is given and not all ranges have the same length, range-index terminates when the shortest range is exhausted. It is an error if the ranges passed to range-index-right do not all have the same lengths. The runtime of these procedures must be O(s) where s is the sum of the total accessing times of the ranges.
 ====== Examples
@@ -396,10 +399,10 @@ Applies pred element-wise to the elements of ranges and returns the index of the
 </enscript>
 ===== range-take-while and range-take-while-right
 ====== Syntax
-#+BEGIN_EXAMPLE
-(range-take-while pred range)
-(range-take-while-right pred range)
-#+END_EXAMPLE
+<procedure>(range-take-while pred range)</procedure>
+
+<procedure>(range-take-while-right pred range)</procedure>
+
 ====== Description
 Returns a range containing the leading/trailing elements of range that satisfy pred up to the first/last one that does not. The runtime of these procedures is asymptotically bounded by the total accessing time of the range. The average accessing time of the resulting range is O(1).
 ====== Examples
@@ -414,10 +417,10 @@ Returns a range containing the leading/trailing elements of range that satisfy p
 </enscript>
 ===== range-drop-while and range-drop-while-right
 ====== Syntax
-#+BEGIN_EXAMPLE
-(range-drop-while pred range)
-(range-drop-while-right pred range)
-#+END_EXAMPLE
+<procedure>(range-drop-while pred range)</procedure>
+
+<procedure>(range-drop-while-right pred range)</procedure>
+
 ====== Description
 Returns a range that omits leading/trailing elements of range that satisfy pred until the first/last one that does not. The runtime of these procedures is asymptotically bounded by the total accessing time of the range. The average accessing time of the resulting range is O(1).
 ====== Examples
@@ -433,11 +436,12 @@ Returns a range that omits leading/trailing elements of range that satisfy pred 
 ==== Conversion
 ===== range->list, range->vector, range->string
 ====== Syntax
-#+BEGIN_EXAMPLE
-(range->list range)
-(range->vector range)
-(range->string range)
-#+END_EXAMPLE
+<procedure>(range->list range)</procedure>
+
+<procedure>(range->vector range)</procedure>
+
+<procedure>(range->string range)</procedure>
+
 ====== Description
 Returns a list/vector/string containing the elements of range in order. It is an error to modify the result of range->vector or of range->string. In the case of range-> string, it is an error if any element of range is not a character. The running times of these procedures is O(s) where s is the total accessing time for range.
 ====== Examples
