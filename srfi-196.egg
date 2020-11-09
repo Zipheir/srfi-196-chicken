@@ -4,6 +4,7 @@
  (maintainer "Sergey Goldgaber")
  (synopsis "SRFI-196: Range Objects")
  (version "0.1")
+ (dependencies srfi-133)
  (category lang-exts)
  (test-dependencies test)
  (license "MIT")
