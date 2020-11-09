@@ -137,7 +137,7 @@ Returns {{#t}} if obj is a range and {{#f}} otherwise. This procedure must run i
 
 <procedure>(range=? equal range1 range2 ...)</procedure>
 
-Returns {{#t}} if all the ranges are of the same length and if their corresponding values are the same in the sense of equal, and {{#f}} otherwise. The runtime of this procedure is O(s) + O(k), where s is the sum of the total accessing times of the ranges and {{k}} is the number of ranges.
+Returns {{#t}} if all the ranges are of the same length and if their corresponding values are the same in the sense of equal, and {{#f}} otherwise. The runtime of this procedure is O(s) + O(k), where {{s}} is the sum of the total accessing times of the ranges and {{k}} is the number of ranges.
 ====== Examples
 <enscript highlight="scheme">
 (range=? = (numeric-range 10 30) (numeric-range 10 30)) ⇑ #t
@@ -249,7 +249,7 @@ Returns a range which contains all except the first/last count elements of range
 
 <procedure>(range-count pred range1 range2 ...)</procedure>
 
-Applies {{pred}} element-wise to the elements of ranges and returns the number of applications which returned true values. If more than one range is given and not all ranges have the same length, range-count terminates when the shortest range is exhausted. The runtime of this procedure is O(s) where s is the sum of the total accessing times of the ranges.
+Applies {{pred}} element-wise to the elements of ranges and returns the number of applications which returned true values. If more than one range is given and not all ranges have the same length, range-count terminates when the shortest range is exhausted. The runtime of this procedure is O(s) where {{s}} is the sum of the total accessing times of the ranges.
 ====== Examples
 <enscript highlight="scheme">
 (range-count even? (numeric-range 0 10)) ⇑ 5
@@ -258,7 +258,7 @@ Applies {{pred}} element-wise to the elements of ranges and returns the number o
 
 <procedure>(range-any pred range1 range2 ...)</procedure>
 
-Applies {{pred}} element-wise to the elements of the ranges and returns true if {{pred}} returns true on any application. Specifically it returns the last value returned by {{pred}}. Otherwise, {{#f}} is returned. If more than one range is given and not all ranges have the same length, range-any terminates when the shortest range is exhausted. The runtime of this procedure is O(s) where s is the sum of the total accessing times of the ranges.
+Applies {{pred}} element-wise to the elements of the ranges and returns true if {{pred}} returns true on any application. Specifically it returns the last value returned by {{pred}}. Otherwise, {{#f}} is returned. If more than one range is given and not all ranges have the same length, range-any terminates when the shortest range is exhausted. The runtime of this procedure is O(s) where {{s}} is the sum of the total accessing times of the ranges.
 ====== Examples
 <enscript highlight="scheme">
 (range-any odd? (numeric-range 0 10)) ⇑ #t
@@ -268,7 +268,7 @@ Applies {{pred}} element-wise to the elements of the ranges and returns true if 
 
 <procedure>(range-every pred range)</procedure>
 
-Applies {{pred}} element-wise to the elements of the ranges and returns true if {{pred}} returns true on every application. Specifically it returns the last value returned by {{pred}} , or {{#t}} if {{pred}} was never invoked. Otherwise, {{#f}} is returned. If more than one range is given and not all ranges have the same length, range-every terminates when the shortest range is exhausted. The runtime of this procedure is O(s) + O(k), where s is the sum of the total accessing times of the ranges and {{k}} is the number of ranges.
+Applies {{pred}} element-wise to the elements of the ranges and returns true if {{pred}} returns true on every application. Specifically it returns the last value returned by {{pred}} , or {{#t}} if {{pred}} was never invoked. Otherwise, {{#f}} is returned. If more than one range is given and not all ranges have the same length, range-every terminates when the shortest range is exhausted. The runtime of this procedure is O(s) + O(k), where {{s}} is the sum of the total accessing times of the ranges and {{k}} is the number of ranges.
 ====== Examples
 <enscript highlight="scheme">
 (range-every integer? (numeric-range 0 10)) ⇑ #t
@@ -284,7 +284,7 @@ Applies {{pred}} element-wise to the elements of the ranges and returns true if 
 <procedure>(range-map->vector proc range1 range2 ...)</procedure>
 
 ====== Description
-Applies {{proc}} element-wise to the elements of the ranges and returns a range/list/vector of the results, in order. If more than one range is given and not all ranges have the same length, these procedures terminate when the shortest range is exhausted. The dynamic order in which {{proc}} is actually applied to the elements is unspecified. The runtime of these procedures is O(s) where s is the sum of the total accessing times of the ranges. The range-map procedure eagerly computes its result and returns an expanded range. Its average accessing time is O(1).
+Applies {{proc}} element-wise to the elements of the ranges and returns a range/list/vector of the results, in order. If more than one range is given and not all ranges have the same length, these procedures terminate when the shortest range is exhausted. The dynamic order in which {{proc}} is actually applied to the elements is unspecified. The runtime of these procedures is O(s) where {{s}} is the sum of the total accessing times of the ranges. The range-map procedure eagerly computes its result and returns an expanded range. Its average accessing time is O(1).
 ====== Examples
 <enscript highlight="scheme">
 (range->list (range-map square (numeric-range 5 10))) ⇑ (25 36 49 64 81)
@@ -299,7 +299,7 @@ Applies {{proc}} element-wise to the elements of the ranges and returns a range/
 
 <procedure>(range-for-each proc range1 range2 ...)</procedure>
 
-Applies {{proc}} element-wise to the elements of the ranges in order. Returns an unspecified result. If more than one range is given and not all ranges have the same length, range-for-each terminates when the shortest range is exhausted. The runtime of this procedure is O(s) where s is the sum of the total accessing times of the ranges.
+Applies {{proc}} element-wise to the elements of the ranges in order. Returns an unspecified result. If more than one range is given and not all ranges have the same length, range-for-each terminates when the shortest range is exhausted. The runtime of this procedure is O(s) where {{s}} is the sum of the total accessing times of the ranges.
 ====== Example
 <enscript highlight="scheme">
 (let ((vec (make-vector 5)))
@@ -338,7 +338,7 @@ Applies {{proc}} element-wise to the elements of the ranges and returns a range/
 <procedure>(range-remove->list pred range)</procedure>
 
 ====== Description
-Returns a range/list containing the elements of range that satisfy / do not satisfy {{pred}}. The runtime of these procedures is O(s) where s is the sum of the total accessing times of the ranges.
+Returns a range/list containing the elements of range that satisfy / do not satisfy {{pred}}. The runtime of these procedures is O(s) where {{s}} is the sum of the total accessing times of the ranges.
 
 The range-filter and range-remove procedures eagerly compute their results and return expanded ranges. Their average accessing time is O(1).
 ====== Examples
@@ -362,7 +362,7 @@ The range-filter and range-remove procedures eagerly compute their results and r
 <procedure>(range-fold-right kons nil range1 range2 ...)</procedure>
 
 ====== Description
-Folds {{kons}} over the elements of ranges in order / reverse order. {{kons}} is applied as ({{kons}} state (range-ref range1 i) (range-ref range2 i) …) where state is the result of the previous invocation and {{i}} is the current index. For the first invocation, nil is used as the first argument. Returns the result of the last invocation, or nil if there was no invocation. If more than one range is given and not all ranges have the same length, these procedures terminate when the shortest range is exhausted. The runtime of these procedures must be O(s) where s is the sum of the total accessing times of the ranges.
+Folds {{kons}} over the elements of ranges in order / reverse order. {{kons}} is applied as ({{kons}} state (range-ref range1 i) (range-ref range2 i) …) where state is the result of the previous invocation and {{i}} is the current index. For the first invocation, nil is used as the first argument. Returns the result of the last invocation, or nil if there was no invocation. If more than one range is given and not all ranges have the same length, these procedures terminate when the shortest range is exhausted. The runtime of these procedures must be O(s) where {{s}} is the sum of the total accessing times of the ranges.
 ====== Examples
 <enscript highlight="scheme">
 (range-fold (lambda (n _) (+ 1 n)) 0 (numeric-range 0 30))
@@ -388,7 +388,7 @@ Folds {{kons}} over the elements of ranges in order / reverse order. {{kons}} is
 <procedure>(range-index-right pred range1 range2... )</procedure>
 
 ====== Description
-Applies {{pred}} element-wise to the elements of ranges and returns the index of the first/last element at which {{pred}} returns true. Otherwise, returns {{#f}}. If more than one range is given and not all ranges have the same length, range-index terminates when the shortest range is exhausted. It is an error if the ranges passed to range-index-right do not all have the same lengths. The runtime of these procedures must be O(s) where s is the sum of the total accessing times of the ranges.
+Applies {{pred}} element-wise to the elements of ranges and returns the index of the first/last element at which {{pred}} returns true. Otherwise, returns {{#f}}. If more than one range is given and not all ranges have the same length, range-index terminates when the shortest range is exhausted. It is an error if the ranges passed to range-index-right do not all have the same lengths. The runtime of these procedures must be O(s) where {{s}} is the sum of the total accessing times of the ranges.
 ====== Examples
 <enscript highlight="scheme">
 (range-index (lambda (x) (> x 10)) (numeric-range 5 15)) ⇑ 6
@@ -445,7 +445,7 @@ Returns a range that omits leading/trailing elements of range that satisfy {{pre
 <procedure>(range->string range)</procedure>
 
 ====== Description
-Returns a list/vector/string containing the elements of range in order. It is an error to modify the result of range->vector or of range->string. In the case of range-> string, it is an error if any element of range is not a character. The running times of these procedures is O(s) where s is the total accessing time for range.
+Returns a list/vector/string containing the elements of range in order. It is an error to modify the result of range->vector or of range->string. In the case of range-> string, it is an error if any element of range is not a character. The running times of these procedures is O(s) where {{s}} is the total accessing time for range.
 ====== Examples
 <enscript highlight="scheme">
 (range->list (numeric-range 0 0)) ⇑ ()
