@@ -70,7 +70,9 @@ Returns a range whose length (number of elements) is length. The indexer procedu
 (range->list (range 10 (lambda (n) (expt 1/2 n))))
   ⇑ (1 1/2 1/4 … 1/512)
 </enscript>
-===== (numeric-range start end [step])
+
+<procedure>(numeric-range start end [step])</procedure>
+
 Returns a numeric range, a special case of a range specified by an inclusive lower bound {{start}}, an exclusive upper bound {{end}}, and a step value (default 1), all of which can be exact or inexact real numbers.
 
 This constructor produces the sequence
