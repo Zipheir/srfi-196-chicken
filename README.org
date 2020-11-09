@@ -406,7 +406,8 @@ Without Python's range object, this SRFI would not exist. Thanks also to the con
 
 Special thanks to Marc Nieper-Wißkirchen, who provided extensive feedback and invaluable insights during the development of this SRFI.
 ** Author
-by John Cowan (text), Wolfgang Corcoran-Mathe (implementation)
+*** by John Cowan (text), Wolfgang Corcoran-Mathe (implementation)
+*** Ported to Chicken Scheme 5 by Sergey Goldgaber
 ** Copyright
 © 2020 John Cowan, Wolfgang Corcoran-Mathe.
 
