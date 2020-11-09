@@ -35,4 +35,4 @@
 
   (define exact inexact->exact)
 
-  (include "srfi-196-impl.scm"))
+  (include "srfi/196.scm"))
