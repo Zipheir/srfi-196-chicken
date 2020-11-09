@@ -133,11 +133,11 @@ Returns a range whose elements are the elements of the ranges in order. This pro
 
 <procedure>(range? obj)</procedure>
 
-Returns {{#t}} if obj is a range and #f otherwise. This procedure must run in O(1) time.
+Returns {{#t}} if obj is a range and {{#f}} otherwise. This procedure must run in O(1) time.
 
 <procedure>(range=? equal range1 range2 ...)</procedure>
 
-Returns {{#t}} if all the ranges are of the same length and if their corresponding values are the same in the sense of equal, and #f otherwise. The runtime of this procedure is O(s) + O(k), where s is the sum of the total accessing times of the ranges and {{k}} is the number of ranges.
+Returns {{#t}} if all the ranges are of the same length and if their corresponding values are the same in the sense of equal, and {{#f}} otherwise. The runtime of this procedure is O(s) + O(k), where s is the sum of the total accessing times of the ranges and {{k}} is the number of ranges.
 ====== Examples
 <enscript highlight="scheme">
 (range=? = (numeric-range 10 30) (numeric-range 10 30)) ⇑ #t
@@ -258,7 +258,7 @@ Applies {{pred}} element-wise to the elements of ranges and returns the number o
 
 <procedure>(range-any pred range1 range2 ...)</procedure>
 
-Applies {{pred}} element-wise to the elements of the ranges and returns true if {{pred}} returns true on any application. Specifically it returns the last value returned by {{pred}}. Otherwise, #f is returned. If more than one range is given and not all ranges have the same length, range-any terminates when the shortest range is exhausted. The runtime of this procedure is O(s) where s is the sum of the total accessing times of the ranges.
+Applies {{pred}} element-wise to the elements of the ranges and returns true if {{pred}} returns true on any application. Specifically it returns the last value returned by {{pred}}. Otherwise, {{#f}} is returned. If more than one range is given and not all ranges have the same length, range-any terminates when the shortest range is exhausted. The runtime of this procedure is O(s) where s is the sum of the total accessing times of the ranges.
 ====== Examples
 <enscript highlight="scheme">
 (range-any odd? (numeric-range 0 10)) ⇑ #t
@@ -268,7 +268,7 @@ Applies {{pred}} element-wise to the elements of the ranges and returns true if 
 
 <procedure>(range-every pred range)</procedure>
 
-Applies {{pred}} element-wise to the elements of the ranges and returns true if {{pred}} returns true on every application. Specifically it returns the last value returned by {{pred}} , or {{#t}} if {{pred}} was never invoked. Otherwise, #f is returned. If more than one range is given and not all ranges have the same length, range-every terminates when the shortest range is exhausted. The runtime of this procedure is O(s) + O(k), where s is the sum of the total accessing times of the ranges and {{k}} is the number of ranges.
+Applies {{pred}} element-wise to the elements of the ranges and returns true if {{pred}} returns true on every application. Specifically it returns the last value returned by {{pred}} , or {{#t}} if {{pred}} was never invoked. Otherwise, {{#f}} is returned. If more than one range is given and not all ranges have the same length, range-every terminates when the shortest range is exhausted. The runtime of this procedure is O(s) + O(k), where s is the sum of the total accessing times of the ranges and {{k}} is the number of ranges.
 ====== Examples
 <enscript highlight="scheme">
 (range-every integer? (numeric-range 0 10)) ⇑ #t
@@ -388,7 +388,7 @@ Folds kons over the elements of ranges in order / reverse order. kons is applied
 <procedure>(range-index-right pred range1 range2... )</procedure>
 
 ====== Description
-Applies {{pred}} element-wise to the elements of ranges and returns the index of the first/last element at which {{pred}} returns true. Otherwise, returns #f. If more than one range is given and not all ranges have the same length, range-index terminates when the shortest range is exhausted. It is an error if the ranges passed to range-index-right do not all have the same lengths. The runtime of these procedures must be O(s) where s is the sum of the total accessing times of the ranges.
+Applies {{pred}} element-wise to the elements of ranges and returns the index of the first/last element at which {{pred}} returns true. Otherwise, returns {{#f}}. If more than one range is given and not all ranges have the same length, range-index terminates when the shortest range is exhausted. It is an error if the ranges passed to range-index-right do not all have the same lengths. The runtime of these procedures must be O(s) where s is the sum of the total accessing times of the ranges.
 ====== Examples
 <enscript highlight="scheme">
 (range-index (lambda (x) (> x 10)) (numeric-range 5 15)) ⇑ 6
