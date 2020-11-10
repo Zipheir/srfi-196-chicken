@@ -19,56 +19,48 @@
 ;;; TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 ;;; SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-(import (scheme base))
-(import (scheme write))
+(import (scheme))
 (import (srfi 1))
+(import (only (srfi 133) vector-map))
 (import (srfi 196))
 
-(cond-expand
-  ((library (srfi 78))
-   (import (srfi 78)))
-  (else
-    (begin
-      (define *tests-failed* 0)
-      (define-syntax check
-        (syntax-rules (=>)
-          ((check expr => expected)
-           (if (equal? expr expected)
-             (begin
-               (display 'expr)
-               (display " => ")
-               (display expected)
-               (display " ; correct")
-               (newline))
-             (begin
-               (set! *tests-failed* (+ *tests-failed* 1))
-               (display "FAILED: for ")
-               (display 'expr)
-               (display " expected ")
-               (display expected)
-               (display " but got ")
-               (display expr)
-               (newline))))))
-      (define (check-report)
-        (if (zero? *tests-failed*)
-            (begin
-             (display "All tests passed.")
-             (newline))
-            (begin
-             (display "TESTS FAILED: ")
-             (display *tests-failed*)
-             (newline)))))))
+(define *tests-failed* 0)
 
-(cond-expand
-  ((library (srfi 158))
-   (import (only (srfi 158) generator->list)))
-  (else
-   (begin
-    (define (generator->list g)
-      (let ((v (g)))
-        (if (eof-object? v)
-            '()
-            (cons v (generator->list g))))))))
+(define-syntax check
+  (syntax-rules (=>)
+    ((check expr => expected)
+     (if (equal? expr expected)
+       (begin
+         (display 'expr)
+         (display " => ")
+         (display expected)
+         (display " ; correct")
+         (newline))
+       (begin
+         (set! *tests-failed* (+ *tests-failed* 1))
+         (display "FAILED: for ")
+         (display 'expr)
+         (display " expected ")
+         (display expected)
+         (display " but got ")
+         (display expr)
+         (newline))))))
+
+(define (check-report)
+  (if (zero? *tests-failed*)
+      (begin
+       (display "All tests passed.")
+       (newline))
+      (begin
+       (display "TESTS FAILED: ")
+       (display *tests-failed*)
+       (newline))))
+
+(define (generator->list g)
+  (let ((v (g)))
+    (if (eof-object? v)
+        '()
+        (cons v (generator->list g)))))
 
 ;;;; Utility
 
@@ -99,6 +91,8 @@
 (define test-num-seq (iota 20 10))
 
 (define test-empty-range (numeric-range 0 0))
+
+(define (square x) (* x x))
 
 ;; Produces the range {#f, #t}.
 (define test-bool-range
