@@ -15,13 +15,14 @@ In addition, there are other sequences besides integers from which a range can b
 The rationale for string-range is to provide efficient random access to strings. There have been many attempts to ensure O(1) reference to string characters, such as string cursors, UTF-32 encoding, SRFI 135 texts, immutable strings, and so on. Because the range-ref procedure for a string created through string-range runs in O(1) time in the length of the string, a range created by string-range can efficiently access arbitrary characters of the range.
 === Specification
 ==== Preliminary notes
-===== Ranges belong to a disjoint type.
-===== Ranges provide certain running time guarantees.
-===== With each range, we associate two lengths of time, the average accessing time and the total accessing time.
+Ranges belong to a disjoint type.
+
+Ranges provide certain running time guarantees. With each range, we associate two lengths of time, the average accessing time and the total accessing time.
 The total accessing time is the average accessing time multiplied by the length of the range. In the runtime guarantees below, the time spent in arguments designated by {{pred}}, equal, or {{proc}} is ignored.
-===== Unless otherwise noted, procedures in this SRFI that return ranges allocate at most O(1) new locations (see R[57]RS section 3.4 for further information). Such ranges are known as compact ranges. Procedures marked as returning expanded ranges allocate at most O(n) locations, where {{n}} is the number of elements in the range.
-===== This SRFI recommends, but does not require, that Scheme implementations which also provide SRFI 42 modify it so that the typed generator :range also accepts a single argument which is a range in the sense of this SRFI. This feature should be used with caution, as SRFI 42 loops expect that :range iterates only over exact rationals.
-===== The following names are used for arguments to procedures:
+
+Unless otherwise noted, procedures in this SRFI that return ranges allocate at most O(1) new locations (see R[57]RS section 3.4 for further information). Such ranges are known as compact ranges. Procedures marked as returning expanded ranges allocate at most O(n) locations, where {{n}} is the number of elements in the range.
+
+The following names are used for arguments to procedures:
 
 <parameter>obj</parameter>
 
@@ -58,13 +59,16 @@ A Scheme vector.
 <parameter>string</parameter>
 
 A Scheme string.
-===== It is an error (unless otherwise noted) if the procedures are passed arguments that do not have the type implied by the argument names.
+
+It is an error (unless otherwise noted) if the procedures are passed arguments that do not have the type implied by the argument names.
+
 ==== Constructors
 
 <procedure>(range length indexer)</procedure>
 
 Returns a range whose length (number of elements) is length. The indexer procedure returns the nth element (where {{0 ≤ n < length}}) of the range, given {{n}}. This procedure must run in O(1) time. The range returned is compact, although indexer may close over arbitrarily large data structures. The average accessing time of the resulting range is the average time needed to run indexer.
-====== Examples:
+
+====== Examples
 <enscript highlight="scheme">
 (range->list (range 26 (lambda (n) (integer->char (+ 65 n)))))
   ⇑ (#\A #\B #\C #\D #\E … #\Z)
