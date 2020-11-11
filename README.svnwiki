@@ -223,9 +223,9 @@ Returns a list of ranges representing the consecutive subranges of length {{leng
 ===== range-take and range-take-right
 ====== Syntax
 
-<procedure>(range-take range count)
+<procedure>(range-take range count)</procedure>
 
-<procedure>(range-take-right range count)
+<procedure>(range-take-right range count)</procedure>
 ====== Description
 Returns a range which contains the first/last {{count}} elements of {{range}}. The average accessing time of the resulting ranges is asymptotically bounded by the average accessing time of {{range}}.
 ====== Examples
