@@ -71,10 +71,10 @@ Returns a range whose length (number of elements) is {{length}}. The indexer pro
 ====== Examples
 <enscript highlight="scheme">
 (range->list (range 26 (lambda (n) (integer->char (+ 65 n)))))
-  ⇑ (#\A #\B #\C #\D #\E … #\Z)
+  ⇒ (#\A #\B #\C #\D #\E … #\Z)
 
 (range->list (range 10 (lambda (n) (expt 1/2 n))))
-  ⇑ (1 1/2 1/4 … 1/512)
+  ⇒ (1 1/2 1/4 … 1/512)
 </enscript>
 
 <procedure>(numeric-range start end [step])</procedure>
@@ -91,9 +91,9 @@ Note that an effect of this definition is that the elements of a range over inex
 ====== Examples
 <enscript highlight="scheme">
 (range->list (numeric-range 0 1 1/10))
-  ⇑ (0 1/10 1/5 3/10 2/5 1/2 3/5 7/10 4/5 9/10)
+  ⇒ (0 1/10 1/5 3/10 2/5 1/2 3/5 7/10 4/5 9/10)
 
-(range->list (numeric-range 5 -5 -3)) ⇑ (5 2 -1 -4)
+(range->list (numeric-range 5 -5 -3)) ⇒ (5 2 -1 -4)
 </enscript>
 
 <procedure>(iota-range length [start [step]])</procedure>
@@ -112,7 +112,7 @@ Returns a range whose elements are those of {{vector}}. The procedure must run i
 ====== Example
 <enscript highlight="scheme">
 (range->list (vector-range #(1 3 5 7 9)))
-  ⇑ (1 3 5 7 9)
+  ⇒ (1 3 5 7 9)
 </enscript>
 
 <procedure>(string-range string)</procedure>
@@ -123,7 +123,7 @@ In a Scheme that guarantees O(1) random access to strings, range-ref on a range 
 ====== Example
 <enscript highlight="scheme">
 (range->list (string-range "abcde"))
-  ⇑ (#\a #\b #\c #\d #\e)
+  ⇒ (#\a #\b #\c #\d #\e)
 </enscript>
 
 <procedure>(range-append range ...)</procedure>
@@ -133,7 +133,7 @@ Returns a range whose elements are the elements of the {{range}}s in order. This
 <enscript highlight="scheme">
 (range->list (range-append (numeric-range 0 3)
                            (numeric-range 3 6)))
-  ⇑ (0 1 2 3 4 5)
+  ⇒ (0 1 2 3 4 5)
 </enscript>
 ==== Predicates
 
@@ -146,9 +146,9 @@ Returns {{#t}} if {{obj}} is a range and {{#f}} otherwise. This procedure must r
 Returns {{#t}} if all the {{range}}s are of the same length and if their corresponding values are the same in the sense of {{equal}}, and {{#f}} otherwise. The runtime of this procedure is O(''s'') + O(''k''), where ''s'' is the sum of the total accessing times of the ranges and ''k'' is the number of ranges.
 ====== Examples
 <enscript highlight="scheme">
-(range=? = (numeric-range 10 30) (numeric-range 10 30)) ⇑ #t
-(range=? = (numeric-range 5 10) (numeric-range 6 11)) ⇑ #f
-(range=? eqv? (numeric-range 0 0) (range 0 (lambda (i) i))) ⇑ #t
+(range=? = (numeric-range 10 30) (numeric-range 10 30)) ⇒ #t
+(range=? = (numeric-range 5 10) (numeric-range 6 11)) ⇒ #f
+(range=? eqv? (numeric-range 0 0) (range 0 (lambda (i) i))) ⇒ #t
 </enscript>
 ==== Accessors
 
@@ -157,7 +157,7 @@ Returns {{#t}} if all the {{range}}s are of the same length and if their corresp
 Returns the length (number of elements) of range. This procedure must run in O(1) time.
 ====== Example
 <enscript highlight="scheme">
-(range-length (numeric-range 10 30)) ⇑ 20
+(range-length (numeric-range 10 30)) ⇒ 20
 </enscript>
 
 <procedure>(range-ref range n)</procedure>
@@ -165,8 +165,8 @@ Returns the length (number of elements) of range. This procedure must run in O(1
 Returns the {{n}}th element of range. It is an error if {{n}} is less than 0 or greater than or equal to the length of {{range}}. The running time of this procedure must be asymptotically equal to the average accessing time of {{range}}.
 ====== Examples
 <enscript highlight="scheme">
-(range-ref (numeric-range 10 30) 5) ⇑ 15
-(range-ref (range 2 (lambda (i) (not (zero? i)))) 1) ⇑ #t
+(range-ref (numeric-range 10 30) 5) ⇒ 15
+(range-ref (range 2 (lambda (i) (not (zero? i)))) 1) ⇒ #t
 </enscript>
 
 <procedure>(range-first range)</procedure>
@@ -174,7 +174,7 @@ Returns the {{n}}th element of range. It is an error if {{n}} is less than 0 or 
 Equivalent (in running time as well) to {{(range-ref range 0)}}.
 ====== Example
 <enscript highlight="scheme">
-(range-first (numeric-range 10 30)) ⇑ 10
+(range-first (numeric-range 10 30)) ⇒ 10
 </enscript>
 
 <procedure>(range-last range)</procedure>
@@ -182,7 +182,7 @@ Equivalent (in running time as well) to {{(range-ref range 0)}}.
 Equivalent (in running time as well) to {{(range-ref range (- (range-length range) 1))}}.
 ====== Example
 <enscript highlight="scheme">
-(range-last (numeric-range 10 30)) ⇑ 29
+(range-last (numeric-range 10 30)) ⇒ 29
 </enscript>
 ==== Iteration
 
@@ -193,7 +193,7 @@ Returns two values: {{(range-take range index)}} and {{(range-drop range index)}
 <enscript highlight="scheme">
 (let-values (((ra rb) (range-split-at (numeric-range 10 20) 5)))
   (values (range->list ra) (range->list rb)))
-    ⇑ (10 11 12 13 14)
+    ⇒ (10 11 12 13 14)
       (15 16 17 18 19)
 </enscript>
 
@@ -203,10 +203,10 @@ Returns a range which contains the elements of range from index {{start}}, inclu
 ====== Examples
 <enscript highlight="scheme">
 (range->list (subrange (numeric-range 5 15) 5 8))
-  ⇑ (10 11 12)
+  ⇒ (10 11 12)
 
 (range->list (subrange (string-range "abcdefghij") 2 8))
-  ⇑ (#\c #\d #\e #\f #\g #\h)
+  ⇒ (#\c #\d #\e #\f #\g #\h)
 </enscript>
 
 <procedure>(range-segment range length)</procedure>
@@ -215,10 +215,10 @@ Returns a list of ranges representing the consecutive subranges of length {{leng
 
 <enscript highlight="scheme">
 (map range->list (range-segment (numeric-range 0 12) 4))
-  ⇑ ((0 1 2 3) (4 5 6 7) (8 9 10 11))
+  ⇒ ((0 1 2 3) (4 5 6 7) (8 9 10 11))
 
 (map range->list (range-segment (numeric-range 0 2 1/3) 4))
-  ⇑ ((0 1/3 2/3 1) (4/3 5/3))
+  ⇒ ((0 1/3 2/3 1) (4/3 5/3))
 </enscript>
 ===== range-take and range-take-right
 ====== Syntax
@@ -231,10 +231,10 @@ Returns a range which contains the first/last {{count}} elements of {{range}}. T
 ====== Examples
 <enscript highlight="scheme">
 (range->list (range-take (numeric-range 0 10) 5))
-  ⇑ (0 1 2 3 4)
+  ⇒ (0 1 2 3 4)
 
 (range->list (range-take-right (numeric-range 0 10) 5))
-  ⇑ (5 6 7 8 9)
+  ⇒ (5 6 7 8 9)
 </enscript>
 ===== range-drop and range-drop-right
 ====== Syntax
@@ -247,10 +247,10 @@ Returns a range which contains all except the first/last {{count}} elements of {
 
 <enscript highlight="scheme">
 (range->list (range-drop (numeric-range 0 10) 5))
-  ⇑ (5 6 7 8 9)
+  ⇒ (5 6 7 8 9)
 
 (range->list (range-drop-right (numeric-range 0 10) 5))
-  ⇑ (0 1 2 3 4)
+  ⇒ (0 1 2 3 4)
 </enscript>
 
 <procedure>(range-count pred range1 range2 ...)</procedure>
@@ -258,8 +258,8 @@ Returns a range which contains all except the first/last {{count}} elements of {
 Applies {{pred}} element-wise to the elements of {{range}}s and returns the number of applications which returned true values. If more than one range is given and not all ranges have the same length, range-count terminates when the shortest range is exhausted. The runtime of this procedure is O(''s'') where ''s'' is the sum of the total accessing times of the {{range}}s.
 ====== Examples
 <enscript highlight="scheme">
-(range-count even? (numeric-range 0 10)) ⇑ 5
-(range-count < (numeric-range 0 10 2) (numeric-range 5 15)) ⇑ 5
+(range-count even? (numeric-range 0 10)) ⇒ 5
+(range-count < (numeric-range 0 10 2) (numeric-range 5 15)) ⇒ 5
 </enscript>
 
 <procedure>(range-any pred range1 range2 ...)</procedure>
@@ -267,9 +267,9 @@ Applies {{pred}} element-wise to the elements of {{range}}s and returns the numb
 Applies {{pred}} element-wise to the elements of the {{range}}s and returns true if {{pred}} returns true on any application. Specifically it returns the last value returned by {{pred}}. Otherwise, {{#f}} is returned. If more than one range is given and not all ranges have the same length, {{range-any}} terminates when the shortest range is exhausted. The runtime of this procedure is O(''s'') where ''s'' is the sum of the total accessing times of the {{range}}s.
 ====== Examples
 <enscript highlight="scheme">
-(range-any odd? (numeric-range 0 10)) ⇑ #t
-(range-any odd? (numeric-range 0 10 2)) ⇑ #f
-(range-any < (numeric-range 0 10 2) (numeric-range 5 15)) ⇑ #t
+(range-any odd? (numeric-range 0 10)) ⇒ #t
+(range-any odd? (numeric-range 0 10 2)) ⇒ #f
+(range-any < (numeric-range 0 10 2) (numeric-range 5 15)) ⇒ #t
 </enscript>
 
 <procedure>(range-every pred range)</procedure>
@@ -277,9 +277,9 @@ Applies {{pred}} element-wise to the elements of the {{range}}s and returns true
 Applies {{pred}} element-wise to the elements of the {{range}}s and returns true if {{pred}} returns true on every application. Specifically it returns the last value returned by {{pred}} , or {{#t}} if {{pred}} was never invoked. Otherwise, {{#f}} is returned. If more than one range is given and not all ranges have the same length, range-every terminates when the shortest range is exhausted. The runtime of this procedure is O(''s'') + O(''k''), where ''s'' is the sum of the total accessing times of the {{range}}s and ''k'' is the number of {{range}}s.
 ====== Examples
 <enscript highlight="scheme">
-(range-every integer? (numeric-range 0 10)) ⇑ #t
-(range-every odd? (numeric-range 0 10)) ⇑ #f
-(range-every < (numeric-range 0 10 2) (numeric-range 5 15)) ⇑ #f
+(range-every integer? (numeric-range 0 10)) ⇒ #t
+(range-every odd? (numeric-range 0 10)) ⇒ #f
+(range-every < (numeric-range 0 10 2) (numeric-range 5 15)) ⇒ #f
 </enscript>
 ===== range-map, range-map->list, and range-map->vector
 ====== Syntax
@@ -293,14 +293,14 @@ Applies {{pred}} element-wise to the elements of the {{range}}s and returns true
 Applies {{proc}} element-wise to the elements of the {{range}}s and returns a range/list/vector of the results, in order. If more than one range is given and not all ranges have the same length, these procedures terminate when the shortest range is exhausted. The dynamic order in which {{proc}} is actually applied to the elements is unspecified. The runtime of these procedures is O(''s'') where ''s'' is the sum of the total accessing times of the {{range}}s. The range-map procedure eagerly computes its result and returns an expanded range. Its average accessing time is O(1).
 ====== Examples
 <enscript highlight="scheme">
-(range->list (range-map square (numeric-range 5 10))) ⇑ (25 36 49 64 81)
+(range->list (range-map square (numeric-range 5 10))) ⇒ (25 36 49 64 81)
 
 (range->list (range-map + (numeric-range 0 5) (numeric-range 5 10)))
-  ⇑ (5 7 9 11 13)
+  ⇒ (5 7 9 11 13)
 
-(range-map->list square (numeric-range 5 10)) ⇑ (25 36 49 64 81)
+(range-map->list square (numeric-range 5 10)) ⇒ (25 36 49 64 81)
 
-(range-map->vector square (numeric-range 5 10)) ⇑ #(25 36 49 64 81)
+(range-map->vector square (numeric-range 5 10)) ⇒ #(25 36 49 64 81)
 </enscript>
 
 <procedure>(range-for-each proc range1 range2 ...)</procedure>
@@ -311,7 +311,7 @@ Applies {{proc}} element-wise to the elements of the {{range}}s in order. Return
 (let ((vec (make-vector 5)))
   (range-for-each (lambda (i) (vector-set! vec i (* i i)))
                   (numeric-range 0 5))
-  vec) ⇑ #(0 1 4 9 16)
+  vec) ⇒ #(0 1 4 9 16)
 </enscript>
 ===== range-filter-map and range-filter-map->list
 ====== Syntax
@@ -325,13 +325,13 @@ Applies {{proc}} element-wise to the elements of the {{range}}s and returns a ra
 <enscript highlight="scheme">
 (range->list (range-filter-map (lambda (x) (and (even? x) (* x x)))
                                (numeric-range 0 10)))
-  ⇑ (0 4 16 36 64)
+  ⇒ (0 4 16 36 64)
 
 (range-filter-map->list (lambda (x y)
                           (and (< x y) (* x y)))
                         (numeric-range 0 10 2)
                         (numeric-range 5 15))
-  ⇑ (0 12 28 48 72)
+  ⇒ (0 12 28 48 72)
 </enscript>
 ===== range-filter, range-filter->list, range-remove, and range->remove->list
 ====== Syntax
@@ -350,16 +350,16 @@ The {{range-filter}} and {{range-remove}} procedures eagerly compute their resul
 ====== Examples
 <enscript highlight="scheme">
 (range->list (range-filter even? (numeric-range 0 10)))
-  ⇑ (0 2 4 6 8)
+  ⇒ (0 2 4 6 8)
 
 (range-filter->list odd? (numeric-range 0 10))
-  ⇑ (1 3 5 7 9)
+  ⇒ (1 3 5 7 9)
 
 (range->list (range-remove even? (numeric-range 0 10)))
-  ⇑ (1 3 5 7 9)
+  ⇒ (1 3 5 7 9)
 
 (range-remove->list odd? (numeric-range 0 10))
-  ⇑ (0 2 4 6 8)
+  ⇒ (0 2 4 6 8)
 </enscript>
 ===== range-fold and range-fold-right
 ====== Syntax
@@ -372,19 +372,19 @@ Folds {{kons}} over the elements of {{range}}s in order / reverse order. {{kons}
 ====== Examples
 <enscript highlight="scheme">
 (range-fold (lambda (n _) (+ 1 n)) 0 (numeric-range 0 30))
-  ⇑ 30
+  ⇒ 30
 
 (range-fold + 0 (numeric-range 0 100) (numeric-range 50 70))
-  ⇑ 1380
+  ⇒ 1380
 
 (range-fold-right xcons '() (numeric-range 0 10))
-  ⇑ (0 1 2 3 4 5 6 7 8 9)
+  ⇒ (0 1 2 3 4 5 6 7 8 9)
 
 (range-fold-right (lambda (lis x y) (cons (+ x y) lis))
                   '()
                   (numeric-range 3 6)
                   (numeric-range 5 12))
-  ⇑ (8 10 12)
+  ⇒ (8 10 12)
 </enscript>
 ==== Searching
 ===== range-index and range-index-right
@@ -397,13 +397,13 @@ Folds {{kons}} over the elements of {{range}}s in order / reverse order. {{kons}
 Applies {{pred}} element-wise to the elements of {{range}}s and returns the index of the first/last element at which {{pred}} returns true. Otherwise, returns {{#f}}. If more than one range is given and not all ranges have the same length, {{range-index}} terminates when the shortest range is exhausted. It is an error if the ranges passed to {{range-index-right}} do not all have the same lengths. The runtime of these procedures must be O(''s'') where ''s'' is the sum of the total accessing times of the {{range}}s.
 ====== Examples
 <enscript highlight="scheme">
-(range-index (lambda (x) (> x 10)) (numeric-range 5 15)) ⇑ 6
+(range-index (lambda (x) (> x 10)) (numeric-range 5 15)) ⇒ 6
 
-(range-index odd? (numeric-range 0 10 2)) ⇑ #f
+(range-index odd? (numeric-range 0 10 2)) ⇒ #f
 
-(range-index = (numeric-range 0 12 2) (numeric-range 5 15)) ⇑ 5
+(range-index = (numeric-range 0 12 2) (numeric-range 5 15)) ⇒ 5
 
-(range-index-right odd? (numeric-range 0 5)) ⇑ 3
+(range-index-right odd? (numeric-range 0 5)) ⇒ 3
 </enscript>
 ===== range-take-while and range-take-while-right
 ====== Syntax
@@ -417,11 +417,11 @@ Returns a range containing the leading/trailing elements of {{range}} that satis
 <enscript highlight="scheme">
 (range->list (range-take-while (lambda (x) (< x 10))
                                (numeric-range 5 15)))
-  ⇑ (5 6 7 8 9)
+  ⇒ (5 6 7 8 9)
 
 (range->list (range-take-while-right (lambda (x) (> x 10))
                                      (numeric-range 5 15)))
-  ⇑ (11 12 13 14)
+  ⇒ (11 12 13 14)
 </enscript>
 ===== range-drop-while and range-drop-while-right
 ====== Syntax
@@ -435,11 +435,11 @@ Returns a range that omits leading/trailing elements of {{range}} that satisfy {
 <enscript highlight="scheme">
 (range->list (range-drop-while (lambda (x) (< x 10))
                                (numeric-range 5 15)))
-  ⇑ (10 11 12 13 14)
+  ⇒ (10 11 12 13 14)
 
 (range->list (range-drop-while-right (lambda (x) (> x 10))
                                      (numeric-range 5 15)))
-  ⇑ (5 6 7 8 9 10)
+  ⇒ (5 6 7 8 9 10)
 </enscript>
 ==== Conversion
 ===== range->list, range->vector, range->string
@@ -454,12 +454,12 @@ Returns a range that omits leading/trailing elements of {{range}} that satisfy {
 Returns a list/vector/string containing the elements of {{range}} in order. It is an error to modify the result of {{range->vector}} or of {{range->string}}. In the case of {{range-> string}}, it is an error if any element of {{range}} is not a character. The running times of these procedures is O(''s'') where ''s'' is the total accessing time for {{range}}.
 ====== Examples
 <enscript highlight="scheme">
-(range->list (numeric-range 0 0)) ⇑ ()
+(range->list (numeric-range 0 0)) ⇒ ()
 
-(range->vector (range 2 (lambda (i) (not (zero? i))))) ⇑ #(#f #t)
+(range->vector (range 2 (lambda (i) (not (zero? i))))) ⇒ #(#f #t)
 
 (range->string (range 5 (lambda (i) (integer->char (+ 65 i)))))
-  ⇑ "ABCDE"
+  ⇒ "ABCDE"
 </enscript>
 
 <procedure>(vector->range vector)</procedure>
@@ -467,7 +467,7 @@ Returns a list/vector/string containing the elements of {{range}} in order. It i
 Returns an expanded range whose elements are those of {{vector}}. Note that, unlike {{vector-range}}, it is not an error to mutate {{vector}}; future mutations of {{vector}} are guaranteed not to affect the range returned by {{vector->range}}. This procedure must run in O(''n'') time, where ''n'' is the length of {{vector}}. Otherwise, this procedure is equivalent to {{vector-range}}.
 ====== Example
 <enscript highlight="scheme">
-(range->list (vector->range #(1 3 5 7 9))) ⇑ (1 3 5 7 9)
+(range->list (vector->range #(1 3 5 7 9))) ⇒ (1 3 5 7 9)
 </enscript>
 
 <procedure>(range->generator range)</procedure>
@@ -476,7 +476,7 @@ Returns a SRFI 158 generator that generates the elements of {{range}} in order. 
 ====== Example
 <enscript highlight="scheme">
 (generator->list (range->generator (numeric-range 0 10)))
-  ⇑ (0 1 2 3 4 5 6 7 8 9)
+  ⇒ (0 1 2 3 4 5 6 7 8 9)
 </enscript>
 === Implementation
 The sample implementation is in the repository of this SRFI and in this .tgz file. An R7RS library file and a separate file containing the actual implementation are provided, along with a test file that works with SRFI 78, but is self-contained if SRFI 78 does not exist. The implementation uses SRFI 1 and can take advantage of SRFI 145 (assume) if it is present.
