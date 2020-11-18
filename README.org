@@ -411,7 +411,7 @@ Special thanks to Marc Nieper-Wißkirchen, who provided extensive feedback and i
 *** by John Cowan (text), Wolfgang Corcoran-Mathe (implementation)
 *** Ported to Chicken Scheme 5 by Sergey Goldgaber
 ** Version history
-*** 0.1 - Ported to Chicken Scheme 5
+ * [[https://github.com/diamond-lizard/srfi-196/releases/tag/0.1][0.1]] - Ported to Chicken Scheme 5
 ** Copyright
 © 2020 John Cowan, Wolfgang Corcoran-Mathe.
 
