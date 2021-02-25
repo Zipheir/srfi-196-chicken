@@ -1,6 +1,4 @@
-;;; srfi-196.egg -*- Scheme -*- vim: ft=scheme:
-
-((author "John Cowan (text), Wolfgang Corcoran-Mathe (implementation)")
+((author "John Cowan & Wolfgang Corcoran-Mathe")
  (maintainer "Wolfgang Corcoran-Mathe")
  (synopsis "SRFI-196: Range Objects")
  (version "0.1")
