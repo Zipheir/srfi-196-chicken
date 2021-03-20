@@ -3,19 +3,11 @@
           (chicken base)
           (chicken module)
           (only (srfi 1) reduce unfold xcons every concatenate)
-          (only (srfi 133) vector-copy string->vector)
+          (only (srfi 133) vector-copy string->vector vector-unfold)
           (srfi 145))
   (import (chicken platform))
 
   (register-feature! 'srfi-196)
-
-  ;; "seedless" unfold/tabulate.
-  (define (vector-unfold f len)
-    (let ((res (make-vector len)))
-      (let lp ((i 0))
-        (cond ((= i len) res)
-              (else (vector-set! res i (f i))
-                    (lp (+ i 1)))))))
 
   (define eof-object
     (let ((*eof-object* (read (open-input-string ""))))
