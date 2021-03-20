@@ -19,11 +19,6 @@
 ;;; TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 ;;; SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-(import (scheme))
-(import (srfi 1))
-(import (only (srfi 133) vector-map))
-(import (srfi 196))
-
 (define *tests-failed* 0)
 
 (define-syntax check
