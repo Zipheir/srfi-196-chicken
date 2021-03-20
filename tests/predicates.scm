@@ -18,27 +18,31 @@
 ;;; FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 ;;; DEALINGS IN THE SOFTWARE.
 
-(import (scheme))
-(import (srfi 1))
-(import (only (srfi 133) vector-map))
-(import (srfi 196))
+;;;; Predicates
 
-;; Common ranges tested across different tests
-(include "common.scm")
+(define (check-predicates)
+  (print-header "Running predicate tests...")
 
-;; Test conversion procedures
-(include "conversion.scm")
-
-;; Test range predicates
-(include "predicates.scm")
-
-;; Test range accessors
-(include "accessors.scm")
-
-;; Test iteration through a range
-(include "iteration.scm")
-
-;; Test searching through a range
-(include "searching.scm")
-
-(include "srfi-196-test.scm")
+  (check (range=? eqv? (numeric-range 0 0) (numeric-range 5 5))  => #t)
+  (check (range=? eqv? (numeric-range 0 0) test-num-range)       => #f)
+  (check (range=? eqv? test-num-range test-num-range)            => #t)
+  (check (range=? eqv? test-num-range (numeric-range 10 30))     => #t)
+  (check (range=? eqv? test-num-range (numeric-range 10 20))     => #f)
+  (check (range=? eqv? test-bool-range (vector-range #(#f #t))) => #t)
+  (check (range=? eqv? test-bool-range (vector-range #(#t #f))) => #f)
+  (check (range=? eqv?
+                  test-num-range
+                  (numeric-range 10 30)
+                  (subrange (numeric-range 0 50) 10 30))
+   => #t)
+  (check (range=? eqv?
+                  test-bool-range
+                  (numeric-range 10 30)
+                  (subrange (numeric-range 0 50) 10 30))
+   => #f)
+  (check (range=? eqv?
+                  test-num-range
+                  (numeric-range 11 31)
+                  (subrange (numeric-range 0 50) 10 30))
+   => #f)
+)

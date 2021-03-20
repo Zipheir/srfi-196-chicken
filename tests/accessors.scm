@@ -18,27 +18,11 @@
 ;;; FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 ;;; DEALINGS IN THE SOFTWARE.
 
-(import (scheme))
-(import (srfi 1))
-(import (only (srfi 133) vector-map))
-(import (srfi 196))
+;;;; Accessors
 
-;; Common ranges tested across different tests
-(include "common.scm")
+(define (check-accessors)
+  (print-header "Running accessor tests...")
 
-;; Test conversion procedures
-(include "conversion.scm")
-
-;; Test range predicates
-(include "predicates.scm")
-
-;; Test range accessors
-(include "accessors.scm")
-
-;; Test iteration through a range
-(include "iteration.scm")
-
-;; Test searching through a range
-(include "searching.scm")
-
-(include "srfi-196-test.scm")
+  (check (range-ref test-num-range 0)  => 10)
+  (check (range-ref test-bool-range 1) => #t)
+)
