@@ -1,3 +1,5 @@
+;; -*- Hen -*-
+
 ((author "John Cowan & Wolfgang Corcoran-Mathe")
  (maintainer "Wolfgang Corcoran-Mathe")
  (synopsis "SRFI-196: Range Objects")
@@ -6,4 +8,8 @@
  (category data)
  (test-dependencies test)
  (license "MIT")
- (components (extension srfi-196)))
+ (components 
+  (extension
+   srfi-196
+   (types-file)
+   (csc-options "-O3" "-d0"))))
