@@ -20,7 +20,8 @@
 
 ;;;; Predicates
 
-(test-group "Span of values in ranges with predicate range=?"
+(test-group "Range predicates"
+ (test-group "Span of values in ranges with predicate range=?"
 
   (test-assert "Two ranges with zero length span equivalent values."
                (range=? eqv? (numeric-range 0 0) (numeric-range 5 5)))
@@ -75,3 +76,4 @@
                           (numeric-range 10 30)
                           (subrange (numeric-range 0 50) 11 31))))
   )
+ )

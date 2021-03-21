@@ -20,7 +20,6 @@
 
 (define (check-all)
   (check-conversion)
-  (check-constructors)
   (check-accessors)
   (check-iteration)
   (check-searching)

@@ -28,9 +28,10 @@
 ;; Common ranges tested across different tests
 (include "common.scm")
 
-(include "constructors.scm")
-
 (test-group "SRFI-196: Ranges"
+  ;; Test range constructors
+  (include "constructors.scm")
+
   ;; Test range predicates
   (include "predicates.scm")
   )
