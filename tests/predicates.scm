@@ -34,7 +34,7 @@
 
   (let ((A (numeric-range 10 30))
         (B (numeric-range 10 30)))
-    (test-assert "Two ranges, A and B, are not the same range."
+    (test-assert "Two numeric ranges, A and B, are not the same range."
                  (not (eq? A B)))
 
     (test-assert "Numeric ranges A and B span equivalent values."
