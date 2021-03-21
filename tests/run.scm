@@ -37,10 +37,10 @@
 
   ;; Test conversion procedures
   (include "conversion.scm")
-  )
 
-;; Test range accessors
-(include "accessors.scm")
+  ;; Test range accessors
+  (include "accessors.scm")
+  )
 
 ;; Test iteration through a range
 (include "iteration.scm")

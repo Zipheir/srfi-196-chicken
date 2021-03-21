@@ -20,9 +20,12 @@
 
 ;;;; Accessors
 
-(define (check-accessors)
-  (print-header "Running accessor tests...")
+(test-group "Range accessors"
+  (test "The first element of (numeric-range 10 30) is 10."
+        10
+        (range-ref test-num-range 0))
 
-  (check (range-ref test-num-range 0)  => 10)
-  (check (range-ref test-bool-range 1) => #t)
-)
+  (test "The last element of a boolean range is #f"
+        #f
+        (range-ref (range 2 zero?) 1))
+  )
