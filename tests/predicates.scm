@@ -20,29 +20,58 @@
 
 ;;;; Predicates
 
-(define (check-predicates)
-  (print-header "Running predicate tests...")
+(test-group "Span of values in ranges with predicate range=?"
 
-  (check (range=? eqv? (numeric-range 0 0) (numeric-range 5 5))  => #t)
-  (check (range=? eqv? (numeric-range 0 0) test-num-range)       => #f)
-  (check (range=? eqv? test-num-range test-num-range)            => #t)
-  (check (range=? eqv? test-num-range (numeric-range 10 30))     => #t)
-  (check (range=? eqv? test-num-range (numeric-range 10 20))     => #f)
-  (check (range=? eqv? test-bool-range (vector-range #(#f #t))) => #t)
-  (check (range=? eqv? test-bool-range (vector-range #(#t #f))) => #f)
-  (check (range=? eqv?
-                  test-num-range
-                  (numeric-range 10 30)
-                  (subrange (numeric-range 0 50) 10 30))
-   => #t)
-  (check (range=? eqv?
-                  test-bool-range
-                  (numeric-range 10 30)
-                  (subrange (numeric-range 0 50) 10 30))
-   => #f)
-  (check (range=? eqv?
-                  test-num-range
-                  (numeric-range 11 31)
-                  (subrange (numeric-range 0 50) 10 30))
-   => #f)
-)
+  (test-assert "Two ranges with zero length span equivalent values."
+               (range=? eqv? (numeric-range 0 0) (numeric-range 5 5)))
+
+  (test-assert "Two ranges with different lengths span different values."
+               (not (range=? eqv? (numeric-range 0 0) (numeric-range 10 30))))
+
+  (let ((rng (numeric-range 10 30)))
+    (test-assert "A range spans equivalent values to itself."
+                 (range=? eqv? rng rng)))
+
+  (let ((A (numeric-range 10 30))
+        (B (numeric-range 10 30)))
+    (test-assert "Two ranges, A and B, are not the same range."
+                 (not (eq? A B)))
+
+    (test-assert "Numeric ranges A and B span equivalent values."
+                 (range=? eqv? A B)))
+
+  (test-assert "Numeric ranges with differing lengths span different values"
+               (not (range=? eqv? (numeric-range 10 30) (numeric-range 10 20))))
+
+  (let ((A (range 2 zero?))
+        (B (vector-range #(#t #f))))
+    (test-assert "Two boolean ranges, A and B, are not the same range"
+                 (not (eq? A B)))
+
+    (test-assert "Two boolean ranges, A and B, were constructed by different procedures."
+                 (not (eq? range vector-range)))
+
+    (test-assert "Boolean ranges A and B span equivalent values"
+                 (range=? eqv? A B))
+
+    (test-assert "Order matters when defining / comparing boolean ranges."
+                 (not (range=? eqv? A (vector-range #(#f #t))))))
+
+  (test-assert "Subranges of equivalent length and offset span equivalent values."
+               (range=? eqv?
+                        (numeric-range 10 30)
+                        (subrange (numeric-range 0 50) 10 30)))
+
+  (test-assert "Ranges with differing length span differing values."
+               (not
+                 (range=? eqv?
+                          (range 2 zero?)
+                          (numeric-range 10 30)
+                          (subrange (numeric-range 0 50) 10 30))))
+
+  (test-assert "Ranges with same length but differing offsets span differing values."
+               (not
+                 (range=? eqv?
+                          (numeric-range 10 30)
+                          (subrange (numeric-range 0 50) 11 31))))
+  )

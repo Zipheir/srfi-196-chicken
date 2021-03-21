@@ -19,7 +19,6 @@
 ;;; DEALINGS IN THE SOFTWARE.
 
 (define (check-all)
-  (check-predicates)
   (check-conversion)
   (check-constructors)
   (check-accessors)

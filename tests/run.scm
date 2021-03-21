@@ -18,19 +18,23 @@
 ;;; FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 ;;; DEALINGS IN THE SOFTWARE.
 
-(import (scheme))
-(import (srfi 1))
-(import (only (srfi 133) vector-map))
-(import (srfi 196))
+(import (scheme)
+        (srfi 1)
+        (only (srfi 133) vector-map)
+        (srfi 196)
+        (test))
+
 
 ;; Common ranges tested across different tests
 (include "common.scm")
 
+(test-group "SRFI-196: Ranges"
+  ;; Test range predicates
+  (include "predicates.scm")
+  )
+
 ;; Test conversion procedures
 (include "conversion.scm")
-
-;; Test range predicates
-(include "predicates.scm")
 
 ;; Test range accessors
 (include "accessors.scm")
