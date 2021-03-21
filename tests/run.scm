@@ -34,10 +34,10 @@
 
   ;; Test range predicates
   (include "predicates.scm")
-  )
 
-;; Test conversion procedures
-(include "conversion.scm")
+  ;; Test conversion procedures
+  (include "conversion.scm")
+  )
 
 ;; Test range accessors
 (include "accessors.scm")

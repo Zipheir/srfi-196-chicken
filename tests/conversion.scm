@@ -20,29 +20,67 @@
 
 ;;;; Conversion
 
-(define (check-conversion)
-  (print-header "Running conversion tests...")
+(test-group "Range conversions"
+  (test "Converting empty range to list is '()"
+        '()
+        (range->list (numeric-range 0 0)))
 
-  (check (range->list test-empty-range) => '())
-  (check (range->list test-bool-range)  => '(#f #t))
-  (check (range->list test-num-range)   => test-num-seq)
+  (test "Converting boolean range to list is '(#t #f)"
+        (list #t #f)
+        (range->list (range 2 zero?)))
 
-  (check (generator->list (range->generator test-num-range))
-   => test-num-seq)
+  (test "Converting (numeric-range 10 30) to list is equal to (iota 20 10)"
+        (iota 20 10)
+        (range->list (numeric-range 10 30)))
 
-  (check (vector->list (range->vector test-num-range)) => test-num-seq)
+  (test "Converting range to generator produces correct set of values."
+        (iota 20 10)
+        (generator->list
+          (range->generator (numeric-range 10 30))))
 
-  (check (range->string test-empty-range) => "")
-  (let ((s "0123456789"))
-    (check (range->string (string-range s)) => s))
+  (test "Converting range to vector produces correct set of values."
+        (iota 20 10)
+        (vector->list (range->vector (numeric-range 10 30))))
 
-  (let* ((vec (vector 1 3 5 7 9))
-         (vrange (vector->range vec)))
-    (check (range-length vrange)  => (vector-length vec))
-    (check (range-first vrange)   => (vector-ref vec 0))
-    (check (range-last vrange)    => (vector-ref vec 4))
-    (check (range->vector vrange) => vec)
-    (check (range->list (begin (vector-set! vec 0 0) vrange))
-     => '(1 3 5 7 9)))
-)
+  (test "Converting empty range to string produces empty string."
+        ""
+        (range->string (numeric-range 0 0)))
+
+  (test-group "String range conversions"
+    (define s "0123456789")
+
+    (test "Converting a range made from a string to a string is reflective."
+          s
+          (range->string (string-range s)))
+
+    ;; First we create the range from the string
+    (define srange (string-range s))
+
+    ;; Then we set the string that we created the range from
+    (string-set! s 0 #\c)
+
+    (test "Changing the original string doesn't affect ranges made from that string."
+          (list #\0 #\1 #\2 #\3 #\4 #\5 #\6 #\7 #\8 #\9)
+          (range->list srange))
+    )
+
+  (test-group "Vector range conversions"
+    (define vec (vector 1 3 5 7 9))
+
+    (test "Converting a range made from a vector to a vector is reflective."
+          vec
+          (range->vector (vector-range vec)))
+
+
+    ;; First we create the range from the vector
+    (define vrange (vector-range vec))
+
+    ;; Then we set the vector that we created the range from
+    (vector-set! vec 0 #\c)
+
+    (test "Changing the original vector doesn't affect ranges made from that vector."
+          (list 1 3 5 7 9)
+          (range->list vrange))
+    )
+  )
 
