@@ -24,7 +24,6 @@
         (srfi 196)
         (test))
 
-
 ;; Common ranges tested across different tests
 (include "common.scm")
 
@@ -46,9 +45,7 @@
 
   ;; Test iteration through a range
   (include "iteration.scm")
+
+  ;; Test searching through a range
+  (include "searching.scm")
   )
-
-;; Test searching through a range
-(include "searching.scm")
-
-(include "srfi-196-test.scm")
