@@ -40,10 +40,13 @@
 
   ;; Test range accessors
   (include "accessors.scm")
-  )
 
-;; Test iteration through a range
-(include "iteration.scm")
+  ;; Test subranges (subrange/take/drop/segment)
+  (include "subranges.scm")
+
+  ;; Test iteration through a range
+  (include "iteration.scm")
+  )
 
 ;; Test searching through a range
 (include "searching.scm")

@@ -20,303 +20,264 @@
 
 ;;;; Iteration
 
-(define (check-iteration)
-  (print-header "Running iteration tests...")
+(test-group "Range iteration"
+  (define r (numeric-range 10 30))
+  (define bool-range (range 2 zero?))
+  (define (square x) (* x x))
 
-  ;; Check lengths of ranges returned by range-split-at.
-  (let ((n 10))
-    (check (let-values (((ra rb) (range-split-at test-num-range n)))
-             (list (range-length ra) (range-length rb)))
-     => (list n (- (range-length test-num-range) n))))
+  (test-group "Mapping over ranges"
+    (test-assert "Mapping add1 over numeric range"
+                 (range=? eqv?
+                          (range-map add1 r)
+                          (numeric-range 11 31)))
 
-  ;; Joining the two ranges returned by range-split-at gives the
-  ;; original range.
-  (check (let-values (((ra rb) (range-split-at test-bool-range 1)))
-           (range=/eqv? (range-append ra rb) test-bool-range))
-   => #t)
+    (test "Mapping over ranges has similar semantics to mapping lists."
+          (map square (iota 20 10))
+          (range->list (range-map square r)))
 
-  (check (range=/eqv?
-          (subrange test-bool-range 0 (range-length test-bool-range))
-          test-bool-range)
-   => #t)
-  (let ((a 5) (b 10))
-    (check (= (range-length (subrange test-num-range a b)) (- b a))
-     => #t)
-    (check (range=/eqv? (subrange test-num-range a b)
-                        (range-take (range-drop test-num-range a) (- b a)))
-     => #t)
-    (check (range=/eqv? (subrange test-num-range 0 b)
-                        (range-take test-num-range b))
-     => #t)
-    (check (range=/eqv?
-            (subrange test-num-range a (range-length test-num-range))
-            (range-drop test-num-range a))
-     => #t))
+    (test-assert "Mapping sum of range with itself."
+                 (range=? eqv?
+                          (range-map + r r)
+                          (numeric-range 20 60 2)))
 
-  ;; range-take r n returns a range of length n.
-  (check (range-length (range-take test-num-range 10)) => 10)
-  (check (range-length
-          (range-take test-num-range (range-length test-num-range)))
-   => (range-length test-num-range))
-  (check (range->list (range-take test-num-range 5))
-   => (take test-num-seq 5))
+    ;; range-map over ranges with unequal lengths terminates when the shortest
+    ;; range is exhausted.
+    (test "Mapping over ranges with unequal lengths produces range with shortest length."
+          2
+          (range-length
+            (range-map (lambda (x b) x)
+                       r
+                       bool-range)))
 
-  ;; range-take-right r n returns a range of length n.
-  (check (range-length (range-take-right test-num-range 10)) => 10)
-  (check (range-length
-          (range-take-right test-num-range (range-length test-num-range)))
-   => (range-length test-num-range))
-  (check (range->list (range-take-right test-num-range 5))
-   => (drop test-num-seq 15))
+    ;; (range-map->list f r) = (map f (range->list r))
+    (test "Mapping a range to a list is equivalent to mapping a range converted to a list."
+          (map not (range->list bool-range))
+          (range-map->list not bool-range))
 
-  ;; range-drop r n returns a range of length (range-length r) - n.
-  (check (range-length (range-drop test-num-range 10))
-   => (- (range-length test-num-range) 10))
-  (check (range-length
-          (range-drop test-num-range (range-length test-num-range)))
-   => 0)
-  (check (range->list (range-drop test-num-range 15))
-   => (drop test-num-seq 15))
+    (test "Mapping ranges to a list has similar semantics to mapping lists."
+          (map + (iota 20 10) (iota 20 10))
+          (range-map->list + r r))
 
-  ;; range-drop-right r n returns a range of length (range-length r) - n.
-  (check (range-length (range-drop-right test-num-range 10))
-   => (- (range-length test-num-range) 10))
-  (check (range-length
-          (range-drop-right test-num-range (range-length test-num-range)))
-   => 0)
-  (check (range->list (range-drop-right test-num-range 15))
-   => (take test-num-seq 5))
+    ;; (range-map->vector f r) = (map f (range->vector r))
+    (test "Mapping a range to a vector is equivalent to ampping a range converted to a vector"
+          (vector-map not (range->vector bool-range))
+          (range-map->vector not bool-range))
 
-  (check (range=/eqv? (car (range-segment test-num-range 5))
-                      (range-take test-num-range 5))
-   => #t)
-  (check (range=/eqv? (apply range-append
-                             (cdr (range-segment test-num-range 5)))
-                      (range-drop test-num-range 5))
-   => #t)
-  (check (range=/eqv? (apply range-append (range-segment test-num-range 5))
-                      test-num-range)
-   => #t)
-  (check (fold + 0 (map range-length (range-segment test-num-range 5)))
-   => (range-length test-num-range))
-  (check (fold + 0 (map range-length (range-segment test-num-range 7)))
-   => (range-length test-num-range))
+    (let ((num-vec (list->vector (iota 20 10))))
+      (test "Mapping ranges to a vector has similar semantics to mapping vectors."
+            (vector-map + num-vec num-vec)
+            (range-map->vector + r r)))
 
-  (check (range-count always test-num-range) => (range-length test-num-range))
-  (check (range-count never test-num-range)  => 0)
-  (check (range-count even? test-num-range)  => (count even? test-num-seq))
-  (check (range-count (lambda (x y) y) test-num-range test-bool-range)
-   => 1)
-  (check (range-count (lambda (x y) (zero? (+ x y)))
-                      test-num-range
-                      (range-map - test-num-range))
-   => (range-length test-num-range))
+    (test "Filter-mapping a range with failing predicate produces empty range."
+          0
+          (range-length
+            (range-filter-map (lambda _ #f)
+                              bool-range)))
 
-  (check (range-any even? test-num-range) => #t)
-  (check (range-any never test-num-range) => #f)
-  (check (range-any (lambda (x y) y) test-num-range test-bool-range)
-   => #t)
-  (check (range-any (lambda (x y) (zero? (+ x y)))
-                    test-num-range
-                    test-num-range)
-   => #f)
+    (test-assert "Filter-mapping a range with succeeding predicate is equivalent."
+                 (range=? eqv?
+                          (range-filter-map identity r)
+                          r))
 
-  (check (range-every number? test-num-range) => #t)
-  (check (range-every even? test-num-range)   => #f)
-  (check (range-every (lambda (x y) y) test-num-range test-bool-range)
-   => #f)
-  (check (range-every (lambda (x y) (zero? (+ x y)))
-                      test-num-range
-                      (range-map - test-num-range))
-   => #t)
-
-  ;;; map, filter-map, & for-each
-
-  (check (range=/eqv? (range-map (lambda (x) (+ 1 x)) test-num-range)
-                      (numeric-range 11 31))
-   => #t)
-  (check (equal? (range->list (range-map square test-num-range))
-                 (map square test-num-seq))
-   => #t)
-  (check (range=/eqv? (range-map + test-num-range test-num-range)
-                      (numeric-range 20 60 2))
-   => #t)
-  ;; range-map over ranges with unequal lengths terminates when
-  ;; the shortest range is exhausted.
-  (check (range=/eqv?
-          (range-map (lambda (x _) x) test-num-range test-bool-range)
-          (range-take test-num-range (range-length test-bool-range)))
-   => #t)
-
-  ;; (range-map->list f r) = (map f (range->list r))
-  (check (equal? (range-map->list not test-bool-range)
-                 (map not (range->list test-bool-range)))
-   => #t)
-  (check (equal? (range-map->list + test-num-range test-num-range)
-                 (map + test-num-seq test-num-seq))
-   => #t)
-
-  ;; (range-map->vector f r) = (map f (range->vector r))
-  (check (equal? (range-map->vector not test-bool-range)
-                 (vector-map not (range->vector test-bool-range)))
-   => #t)
-  (let ((num-vec (list->vector test-num-seq)))
-    (check (equal? (range-map->vector + test-num-range test-num-range)
-                   (vector-map + num-vec num-vec))
-     => #t))
-
-  (check (%range-empty? (range-filter-map never test-bool-range)) => #t)
-  (check (range=/eqv? (range-filter-map values test-num-range)
-                      test-num-range)
-   => #t)
-  (check (equal?
+    (test "Filter-mapping a range has similar semantics to filter-mapping a list."
+          (filter-map (lambda (x) (and (even? x) x))
+                      (iota 20 10))
           (range->list (range-filter-map (lambda (x) (and (even? x) x))
-                                         test-num-range))
-          (filter-map (lambda (x) (and (even? x) x)) test-num-seq))
-   => #t)
-  (let ((proc (lambda (x y) (and (even? x) (even? y) (+ x y)))))
-    (check (range=/eqv? (range-filter-map proc test-num-range test-num-range)
-                        (numeric-range 20 60 4))
-     => #t))
+                                         r)))
 
-  (check (range-filter-map->list never test-bool-range) => '())
-  (check (equal? (range-filter-map->list values test-num-range)
-                 test-num-seq)
-   => #t)
-  (check (equal?
-          (range-filter-map->list (lambda (x) (and (even? x) x))
-                                  test-num-range)
-          (filter-map (lambda (x) (and (even? x) x)) test-num-seq))
-   => #t)
-  (let ((proc (lambda (x y) (and (even? x) (even? y) (+ x y)))))
-    (check (equal? (range-filter-map->list proc
-                                           test-num-range
-                                           test-num-range)
-                   (filter-map proc test-num-seq test-num-seq))
-     => #t))
+    (define (add-if-even x y)
+      (and (even? x)
+           (even? y)
+           (+ x y)))
 
-  (check (let ((v #f))
-           (range-for-each (lambda (x) (set! v x)) test-bool-range)
-           v)
-   => #t)
-  (check (let ((v #f))
-           (range-for-each (lambda (x y) (when y (set! v x)))
-                           test-num-range
-                           test-bool-range)
-           v)
-   => 11)
+    (test-assert "Filter-mapping with add-if-even on numeric range."
+                 (range=? eqv?
+                          (range-filter-map add-if-even r r)
+                          (numeric-range 20 60 4)))
 
-  ;;; filter & remove
+    (test "Filter-mapping to list failing predicate produces empty list."
+          '()
+          (range-filter-map->list (lambda _ #f) bool-range))
 
-  (check (range=/eqv? (range-filter always test-bool-range)
-                      test-bool-range)
-   => #t)
-  (check (%range-empty? (range-filter never test-bool-range)) => #t)
-  (check (equal? (range->list (range-filter even? test-num-range))
-                 (filter even? test-num-seq))
-   => #t)
+    (test "Filter-mapping to list produces same list as list conversion."
+          (iota 20 10)
+          (range-filter-map->list values r))
 
-  (check (range-filter->list always test-bool-range) => '(#f #t))
+    (define (proc x)
+      (and (even? x) x))
 
-  (check (null? (range-filter->list never test-bool-range)) => #t)
+    (test "Filter-mapping to list has similar semantics to filter-mapping a list."
+          (filter-map proc (iota 20 10))
+          (range-filter-map->list proc r))
 
-  ;; (range-filter->list pred r) = (filter pred (range->list r))
-  (check (equal? (range-filter->list even? test-num-range)
-                 (filter even? test-num-seq))
-   => #t)
 
-  (check (range=/eqv? (range-remove never test-bool-range)
-                      test-bool-range)
-   => #t)
-  (check (%range-empty? (range-remove always test-bool-range))
-   => #t)
-  (check (equal? (range->list (range-remove even? test-num-range))
-                 (remove even? test-num-seq))
-   => #t)
+    (test "Filter-mapping to list with add-if-even creates same list as filter-map."
+          (filter-map add-if-even (iota 20 10) (iota 20 10))
+          (range-filter-map->list add-if-even r r))
+    )
 
-  (check (equal? (range-remove->list never test-bool-range)
-                 (range->list test-bool-range))
-   => #t)
+  (test-group "For-each value in range"
+    (test-assert "Setting value from boolean range."
+                 (let ((v #f))
+                   (range-for-each (lambda (x) (set! v x))
+                                   (range-reverse bool-range))
+                   v))
 
-  (check (null? (range-remove->list always test-bool-range)) => #t)
+    (test "For-each over ranges only iterates to the smallest range."
+          11
+          (let ((v #f))
+            (range-for-each (lambda (x y) (when y (set! v x)))
+                            r
+                            (range-reverse bool-range))
+            v))
+    )
 
-  ;; (range-remove->list pred r) = (remove pred (range->list r))
-  (check (equal? (range-remove->list even? test-num-range)
-                 (remove even? test-num-seq))
-   => #t)
+  (test-group "Filtering / removal from ranges"
+    ;;; filter & remove
 
-  ;; (range-fold (lambda (b) (+ 1 b)) 0 r) = (range-length r)
-  (check (= (range-fold (lambda (b _) (+ b 1)) 0 test-num-range)
-            (range-length test-num-range))
-   => #t)
+    (test-assert "Filtering range with successful predicate produces equivalent range."
+                 (range=? eqv?
+                          (range-filter (lambda _ #t) bool-range)
+                          bool-range))
 
-  ;; (range-fold proc nil r) = (fold proc nil (range->list r))
-  (check (equal? (range-fold + 0 test-num-range)
-                 (fold + 0 test-num-seq))
-   => #t)
+    (test "Filtering with failing predicate always produces empty range."
+          0
+          (range-length (range-filter (lambda _ #f) test-bool-range)))
 
-  (check (= (range-fold + 0 test-num-range test-num-range)
-            (fold + 0 test-num-seq test-num-seq))
-   => #t)
+    (test "Filtering a range has similar semantics to filtering a list."
+          (filter even? (iota 20 10))
+          (range->list (range-filter even? r)))
 
-  ;; range-fold over ranges with unequal lengths terminates when
-  ;; the shortest range is exhausted.
-  (check (= (range-fold (lambda (s x _) (+ s x))
-                        0
-                        test-num-range
-                        test-bool-range)
-            (range-fold + 0 (range-take test-num-range
-                                        (range-length test-bool-range))))
-   => #t)
+    (test "Filtering to a list with successful predicate produced equivalent list."
+          (list #t #f)
+          (range-filter->list always bool-range))
 
-  ;; (range-fold-right (lambda (b) (+ 1 b)) 0 r) = (range-length r)
-  (check (= (range-fold-right (lambda (b _) (+ b 1)) 0 test-num-range)
-            (range-length test-num-range))
-   => #t)
+    (test-assert "Filtering to a list with failing predicate produces null list."
+                 (null? (range-filter->list (lambda _ #f) bool-range)))
 
-  ;; (range-fold-right r proc nil) = (fold-right proc nil (range->list r))
-  (check (equal? (range-fold-right + 0 test-num-range)
-                 (fold-right + 0 test-num-seq))
-   => #t)
+    ;; (range-filter->list pred r) = (filter pred (range->list r))
+    (test "Filtering to a list has similar semantics to filtering a list."
+          (filter even? (iota 20 10))
+          (range-filter->list even? r))
 
-  (check (= (range-fold-right + 0 test-num-range test-num-range)
-            (fold-right + 0 test-num-seq test-num-seq))
-   => #t)
+    (test-assert "Removing with failing predicate produces the an equivalent range."
+                 (range=? eqv?
+                          (range-remove never bool-range)
+                          bool-range))
 
-  ;; range-fold-right over ranges with unequal lengths terminates when
-  ;; the shortest range is exhausted.
-  (check (= (range-fold-right (lambda (s x _) (+ s x))
-                              0
-                              test-num-range
-                              test-bool-range)
-            (range-fold-right + 0 (range-take test-num-range
-                                              (range-length
-                                               test-bool-range))))
-   => #t)
+    (test "Removing with successful predicate produces empty range."
+          0
+          (range-length (range-remove (lambda _ #t) bool-range)))
 
-  (check (eqv? (range-first (range-reverse test-bool-range))
-               (range-last test-bool-range))
-   => #t)
+    (test "Removing from a range has similar semantics to removing from a list."
+          (remove even? (iota 20 10))
+          (range->list (range-remove even? r)))
 
-  (check (eqv? (range-last (range-reverse test-bool-range))
-               (range-first test-bool-range))
-   => #t)
+    (test "Removing to a list with failing predicate is same as list conversion."
+          (range->list bool-range)
+          (range-remove->list (lambda _ #f) bool-range))
 
-  (check (equal? (range->list (range-reverse test-num-range))
-                 (reverse test-num-seq))
-   => #t)
+    (test-assert "Removing to a list with successful predicate produces null list."
+                 (null? (range-remove->list always test-bool-range)))
 
-  (check (%range-empty? (range-append)) => #t)
-  (check (range->list (range-append test-bool-range)) => '(#f #t))
-  (check (range=/eqv? (range-append (numeric-range 10 20)
-                                    (numeric-range 20 30))
-                      test-num-range)
-   => #t)
-  (check (range=/eqv? (range-append (numeric-range 10 15)
-                                    (numeric-range 15 20)
-                                    (numeric-range 20 25)
-                                    (numeric-range 25 30))
-                      test-num-range)
-   => #t)
-)
+    ;; (range-remove->list pred r) = (remove pred (range->list r))
+    (test "Removing to a list has similar semantics to removing from a list."
+          (remove even? (iota 20 10))
+          (range-remove->list even? r))
+    )
+
+  (test-group "Folding over ranges"
+    ;; (range-fold (lambda (b) (+ 1 b)) 0 r) = (range-length r)
+    (test "Folding a count over a range is the length of the range."
+          (range-length r)
+          (range-fold (lambda (knil x) (add1 knil)) 0 r))
+
+    ;; (range-fold proc nil r) = (fold proc nil (range->list r))
+    (test "Folding a range has similar semantics to folding a list."
+          (fold + 0 (iota 20 10))
+          (range-fold + 0 r))
+
+    (test "Folding over multiple ranges has similar semantics to folding over multiple lists."
+          (fold + 0 (iota 20 10) (iota 20 10))
+          (range-fold + 0 r r))
+
+    ;; range-fold over ranges with unequal lengths terminates when
+    ;; the shortest range is exhausted.
+    (test "Folding over ranges with unequal lengths terminates when the shortest range is exhausted."
+          (range-fold + 0 (range-take r
+                                      (range-length bool-range)))
+          (range-fold (lambda (knil x _) (+ knil x))
+                      0
+                      r
+                      bool-range))
+
+    ;; (range-fold-right (lambda (b) (+ 1 b)) 0 r) = (range-length r)
+    (test "Folding right with a count over a range is the length of the range."
+          (range-length r)
+          (range-fold-right (lambda (knil _) (add1 knil)) 0 r))
+
+    ;; (range-fold-right r proc nil) = (fold-right proc nil (range->list r))
+    (test "Folding right over a range has similar semantics to folding right over a list."
+          (fold-right + 0 (iota 20 10))
+          (range-fold-right + 0 r))
+
+    (test "Folding right over ranges has similar semantics to folding right over lists."
+          (fold-right + 0 (iota 20 10) (iota 20 10))
+          (range-fold-right + 0 r r))
+
+    ;; range-fold-right over ranges with unequal lengths terminates when
+    ;; the shortest range is exhausted.
+    (test "Folding right over ranges with unequal lengths terminates when the shortest range is exhausted."
+          (range-fold-right + 0 (range-take r
+                                            (range-length bool-range)))
+          (range-fold-right (lambda (knil x _) (+ knil x))
+                            0
+                            r
+                            bool-range))
+    )
+
+  (test-group "Reversing ranges"
+    (test "First element of reversed range is equal to last element of range."
+          (range-first (range-reverse bool-range))
+          (range-last bool-range))
+
+    (test "Last element of reversed range is equal to first element of range."
+          (range-last (range-reverse bool-range))
+          (range-first bool-range))
+
+    (test "Reversing a range has similar semantics to reversing a list."
+          (reverse (iota 20 10))
+          (range->list (range-reverse r)))
+
+    (test-assert "Range reversal is reflective"
+                 (range=? eqv?
+                          r
+                          (range-reverse (range-reverse r))))
+    )
+
+  (test-group "Appending ranges"
+    (test "Appending zero ranges together produces empty range."
+          0
+          (range-length (range-append)))
+
+    (test-assert "Appending a single range produces an equivalent range."
+                 (range=? eqv?
+                          r
+                          (range-append r)))
+
+    (test-assert "Appending two ranges produces second range appended to first."
+                 (range=? eqv?
+                          (range-append (numeric-range 10 20)
+                                        (numeric-range 20 30))
+                          r))
+
+    (test-assert "Appending three ranges produces following ranges appended to first."
+                 (range=? eqv?
+                          (range-append (numeric-range 10 15)
+                                        (numeric-range 15 20)
+                                        (numeric-range 20 25)
+                                        (numeric-range 25 30))
+                          r))
+    )
+  )
 

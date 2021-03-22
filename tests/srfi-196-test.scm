@@ -19,7 +19,6 @@
 ;;; DEALINGS IN THE SOFTWARE.
 
 (define (check-all)
-  (check-iteration)
   (check-searching)
 
   (newline)
