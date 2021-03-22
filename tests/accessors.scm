@@ -18,31 +18,14 @@
 ;;; FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 ;;; DEALINGS IN THE SOFTWARE.
 
-(import (scheme)
-        (srfi 1)
-        (only (srfi 133) vector-map)
-        (srfi 196)
-        (test))
+;;;; Accessors
 
-(test-group "SRFI-196: Ranges"
-  ;; Test range constructors
-  (include "constructors.scm")
+(test-group "Range accessors"
+  (test "The first element of (numeric-range 10 30) is 10."
+        10
+        (range-ref (numeric-range 10 30) 0))
 
-  ;; Test range predicates
-  (include "predicates.scm")
-
-  ;; Test conversion procedures
-  (include "conversion.scm")
-
-  ;; Test range accessors
-  (include "accessors.scm")
-
-  ;; Test subranges (subrange/take/drop/segment)
-  (include "subranges.scm")
-
-  ;; Test iteration through a range
-  (include "iteration.scm")
-
-  ;; Test searching through a range
-  (include "searching.scm")
+  (test "The last element of a boolean range is #f"
+        #f
+        (range-ref (range 2 zero?) 1))
   )
