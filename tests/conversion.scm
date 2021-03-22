@@ -33,6 +33,12 @@
         (iota 20 10)
         (range->list (numeric-range 10 30)))
 
+  (define (generator->list g)
+    (let ((val (g)))
+      (if (eof-object? val)
+        '()
+        (cons val (generator->list g)))))
+
   (test "Converting range to generator produces correct set of values."
         (iota 20 10)
         (generator->list

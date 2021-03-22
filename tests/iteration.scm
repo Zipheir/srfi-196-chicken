@@ -142,7 +142,7 @@
 
     (test "Filtering with failing predicate always produces empty range."
           0
-          (range-length (range-filter (lambda _ #f) test-bool-range)))
+          (range-length (range-filter (lambda _ #f) bool-range)))
 
     (test "Filtering a range has similar semantics to filtering a list."
           (filter even? (iota 20 10))
@@ -150,7 +150,7 @@
 
     (test "Filtering to a list with successful predicate produced equivalent list."
           (list #t #f)
-          (range-filter->list always bool-range))
+          (range-filter->list (lambda _ #t) bool-range))
 
     (test-assert "Filtering to a list with failing predicate produces null list."
                  (null? (range-filter->list (lambda _ #f) bool-range)))
@@ -162,7 +162,7 @@
 
     (test-assert "Removing with failing predicate produces the an equivalent range."
                  (range=? eqv?
-                          (range-remove never bool-range)
+                          (range-remove (lambda _ #f) bool-range)
                           bool-range))
 
     (test "Removing with successful predicate produces empty range."
@@ -178,7 +178,7 @@
           (range-remove->list (lambda _ #f) bool-range))
 
     (test-assert "Removing to a list with successful predicate produces null list."
-                 (null? (range-remove->list always test-bool-range)))
+                 (null? (range-remove->list (lambda _ #t) bool-range)))
 
     ;; (range-remove->list pred r) = (remove pred (range->list r))
     (test "Removing to a list has similar semantics to removing from a list."

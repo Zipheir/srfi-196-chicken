@@ -21,8 +21,9 @@
 (test-group "Range construction"
 
   (test-group "Numeric range construction."
-    (test-assert "(numeric-range 1 1) is empty."
-                 (%range-empty? (numeric-range 1 1)))
+    (test "(numeric-range 1 1) is empty."
+          0
+          (range-length (numeric-range 1 1)))
 
     (test "(numeric-range -5 -1) to list is (iota 4 -5)"
           (iota 4 -5)
@@ -40,11 +41,13 @@
           (iota 3 0 4)
           (range->list (numeric-range 0 9 4)))
 
-    (test-assert "(numeric-range 0 10 -1) is empty."
-                 (%range-empty? (numeric-range 0 10 -1)))
+    (test "(numeric-range 0 10 -1) is empty."
+          0
+          (range-length (numeric-range 0 10 -1)))
 
-    (test-assert "(numeric-range 0 -10) is empty."
-                 (%range-empty? (numeric-range 0 -10)))
+    (test "(numeric-range 0 -10) is empty."
+          0
+          (range-length (numeric-range 0 -10)))
 
     (test "(numeric-range 5 1 -1) to list is (iota 4 5 -1)"
           (iota 4 5 -1)
@@ -73,8 +76,9 @@
                           (iota-range 10 0 0)
                           (range 10 (lambda (_) 0))))
 
-    (test-assert "iota range of zero length is empty."
-                 (%range-empty? (iota-range 0)))
+    (test "iota range of zero length is empty."
+          0
+          (range-length (iota-range 0)))
 
     (test "(iota-range 10) to list is (iota 10)"
           (iota 10)

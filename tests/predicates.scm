@@ -22,6 +22,7 @@
 
 (test-group "Range predicates"
   (define r (numeric-range 10 30))
+  (define bool-range (range 2 zero?))
 
   (test-group "Span of values in ranges with predicate range=?"
 
@@ -67,7 +68,7 @@
     (test-assert "Ranges with differing length span differing values."
                  (not
                    (range=? eqv?
-                            (range 2 zero?)
+                            bool-range
                             r
                             (subrange (numeric-range 0 50) 10 30))))
 
@@ -95,7 +96,7 @@
           1
           (range-count (lambda (x y) y)
                        r
-                       (range 2 zero?)))
+                       bool-range))
 
     (test "Counting predicates over mapped values."
           (range-length r)
@@ -111,7 +112,7 @@
     (test-assert "Searching across multiple ranges succeeds."
                  (range-any (lambda (x y) y)
                             r
-                            (range 2 zero?)))
+                            bool-range))
 
     (test-assert "Searching for any zero value in mapped numeric range."
                  (not (range-any zero?
@@ -121,12 +122,12 @@
                  (range-every number? r))
 
     (test-assert "Not every value in numeric range is even."
-                 (not (range-every even? test-num-range)))
+                 (not (range-every even? r)))
 
     (test-assert "Every value tested with a boolean range fails."
                  (not (range-every (lambda (x y) y)
                                    r
-                                   (range 2 zero?))))
+                                   bool-range)))
 
     (test-assert "Every value from mapped difference in range is zero"
                  (range-every zero? (range-map - r r)))

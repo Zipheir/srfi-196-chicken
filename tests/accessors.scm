@@ -23,7 +23,7 @@
 (test-group "Range accessors"
   (test "The first element of (numeric-range 10 30) is 10."
         10
-        (range-ref test-num-range 0))
+        (range-ref (numeric-range 10 30) 0))
 
   (test "The last element of a boolean range is #f"
         #f

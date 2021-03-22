@@ -58,7 +58,7 @@
       (test-assert "Subrange spans equivalent values to dropping and then taking from a range."
                    (range=? eqv?
                             (subrange r lower upper)
-                            (range-take (range-drop test-num-range lower)
+                            (range-take (range-drop r lower)
                                         (- upper lower))))
 
       (test-assert "Subrange from 0 spans equivalent values to taking from range."

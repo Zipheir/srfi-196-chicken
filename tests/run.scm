@@ -24,9 +24,6 @@
         (srfi 196)
         (test))
 
-;; Common ranges tested across different tests
-(include "common.scm")
-
 (test-group "SRFI-196: Ranges"
   ;; Test range constructors
   (include "constructors.scm")
