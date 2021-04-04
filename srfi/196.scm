@@ -441,7 +441,7 @@
 
 (define range-append
   (case-lambda
-    (() (raw-range 0 0 #f 0))
+    (() (raw-range 0 0 identity 0))
     ((r) r)                             ; one-range fast path
     ((ra rb)                            ; two-range fast path
      (let ((la (range-length ra))
