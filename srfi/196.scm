@@ -18,11 +18,13 @@
 ;;; FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 ;;; DEALINGS IN THE SOFTWARE.
 
+(: exact-natural? (* -> boolean))
 (define (exact-natural? x)
   (and (exact-integer? x) (not (negative? x))))
 
 ;; Find the least element of a list non-empty of naturals. If an element
 ;; is zero, returns it immediately.
+(: short-minimum ((list-of fixnum) -> fixnum))
 (define (short-minimum ns)
   (call-with-current-continuation
    (lambda (return)
@@ -31,6 +33,7 @@
              0
              ns))))
 
+(: sum ((list-of fixnum) -> fixnum))
 (define (sum ns) (reduce + 0 ns))
 
 (define-record-type <range>
@@ -47,20 +50,25 @@
 ;; Maximum number of indexers to compose with range-reverse and
 ;; range-append before a range is expanded with vector-range.
 ;; This may need adjustment.
+(: %range-maximum-complexity fixnum)
 (define %range-maximum-complexity 16)
 
 ;; Returns an empty range which is otherwise identical to r.
+(: %empty-range-from ((struct <range>) -> (struct <range>)))
 (define (%empty-range-from r)
   (raw-range (range-start-index r) 0 (range-indexer r) (range-complexity r)))
 
+(: threshold? (fixnum -> boolean))
 (define (threshold? k)
   (> k %range-maximum-complexity))
 
+(: %range-valid-index? ((struct <range>) fixnum -> boolean))
 (define (%range-valid-index? r index)
   (and (exact-natural? index)
        (< index (range-length r))))
 
 ;; As the previous check, but bound is assumed to be exclusive.
+(: %range-valid-bound? ((struct <range>) * -> boolean))
 (define (%range-valid-bound? r bound)
   (and (exact-natural? bound)
        (<= bound (range-length r))))
@@ -68,11 +76,14 @@
 ;;;; Constructors
 
 ;; The primary range constructor does some extra consistency checking.
+(: range (fixnum (fixnum -> *) -> (struct <range>)))
 (define (range length indexer)
   (assume (exact-natural? length))
   (assume (procedure? indexer))
   (raw-range 0 length indexer 0))
 
+(: numeric-range (or (fixnum fixnum -> (struct <range>))
+                     (fixnum fixnum fixnum -> (struct <range>))))
 (define numeric-range
   (case-lambda
     ((start end) (numeric-range start end 1))
@@ -94,6 +105,9 @@
        (raw-range 0 len (lambda (n) (+ start (* n step))) 0)))))
 
 ;; TODO: Consider possible round-off bugs.
+(: iota-range (or (fixnum -> (struct <range>))
+                  (fixnum fixnum -> (struct <range>))
+                  (fixnum fixnum fixnum -> (struct <range>))))
 (define iota-range
   (case-lambda
     ((len) (iota-range len 0 1))
@@ -110,6 +124,7 @@
                       (else (lambda (i) (+ start (* step i)))))
                 0))))
 
+(: vector-range (vector -> (struct <range>)))
 (define (vector-range vec)
   (assume (vector? vec))
   (raw-range 0 (vector-length vec) (lambda (i) (vector-ref vec i)) 0))
@@ -120,10 +135,12 @@
 ;;
 ;; (raw-range 0 (string-length s) (lambda (i) (string-ref s i))))
 ;;
+(: string-range (string -> (struct <range>)))
 (define (string-range s)
   (assume (string? s))
   (vector-range (string->vector s)))
 
+(: %range-maybe-vectorize ((struct <range>) -> (struct <range>)))
 (define (%range-maybe-vectorize r)
   (if (threshold? (range-complexity r))
       (vector-range (range->vector r))
@@ -131,6 +148,7 @@
 
 ;;;; Accessors
 
+(: range-ref ((struct <range>) fixnum -> *))
 (define (range-ref r index)
   (assume (range? r))
   (assume (%range-valid-index? r index) "range-ref: invalid index")
@@ -143,12 +161,16 @@
     ((_ r index)
      ((range-indexer r) (+ index (range-start-index r))))))
 
+(: range-first ((struct <range>) -> *))
 (define (range-first r) (%range-ref-no-check r (range-start-index r)))
 
+(: range-last ((struct <range>) -> *))
 (define (range-last r) (%range-ref-no-check r (- (range-length r) 1)))
 
 ;;;; Predicates
 
+(: range=? (or ((* * -> boolean) (struct <range>) (struct <range>) -> boolean)
+               ((* * -> boolean) #!rest (list-of (struct <range>)) -> boolean)))
 (define range=?
   (case-lambda
     ((equal ra rb)                      ; two-range fast path
@@ -162,6 +184,7 @@
        (assume (range? ra))
        (every (lambda (rb) (%range=?-2 equal ra rb)) (cdr rs))))))
 
+(: %range=?-2 ((* * -> boolean) (struct <range>) (struct <range>) -> boolean))
 (define (%range=?-2 equal ra rb)
   (assume (range? rb))
   (or (eqv? ra rb)                      ; quick check
@@ -178,6 +201,7 @@
 
 ;;;; Iteration
 
+(: range-split-at ((struct <range>) fixnum -> (struct <range>) (struct <range>)))
 (define (range-split-at r index)
   (assume (range? r))
   (assume (%range-valid-bound? r index))
@@ -188,6 +212,7 @@
            (values (raw-range (range-start-index r) index indexer k)
                    (raw-range index (- (range-length r) index) indexer k))))))
 
+(: subrange ((struct <range>) fixnum fixnum -> (struct <range>)))
 (define (subrange r start end)
   (assume (range? r))
   (assume (%range-valid-index? r start) "subrange: invalid start index")
@@ -200,6 +225,7 @@
                  (range-indexer r)
                  (range-complexity r))))
 
+(: range-segment ((struct <range>) fixnum -> (list-of (struct <range>))))
 (define (range-segment r k)
   (assume (range? r))
   (assume (and (exact-integer? k) (positive? k)))
@@ -215,6 +241,7 @@
             (lambda (i) (+ i k))
             0)))
 
+(: range-take ((struct <range>) fixnum -> (struct <range>)))
 (define (range-take r count)
   (assume (range? r))
   (assume (%range-valid-bound? r count) "range-take: invalid count")
@@ -225,6 +252,7 @@
                          (range-indexer r)
                          (range-complexity r)))))
 
+(: range-take-right ((struct <range>) fixnum -> (struct <range>)))
 (define (range-take-right r count)
   (assume (range? r))
   (assume (%range-valid-bound? r count)
@@ -237,6 +265,7 @@
                     (range-indexer r)
                     (range-complexity r)))))
 
+(: range-drop ((struct <range>) fixnum -> (struct <range>)))
 (define (range-drop r count)
   (assume (range? r))
   (assume (%range-valid-bound? r count) "range-drop: invalid count")
@@ -247,6 +276,7 @@
                  (range-indexer r)
                  (range-complexity r))))
 
+(: range-drop-right ((struct <range>) fixnum -> (struct <range>)))
 (define (range-drop-right r count)
   (assume (range? r))
   (assume (%range-valid-bound? r count) "range-drop: invalid count")
@@ -257,6 +287,7 @@
                  (range-indexer r)
                  (range-complexity r))))
 
+(: range-count (procedure (struct <range>) #!rest (list-of (struct <range>)) -> fixnum))
 (define (range-count pred r . rs)
   (assume (procedure? pred))
   (assume (range? r))
@@ -269,6 +300,7 @@
              r
              rs)))
 
+(: range-any (procedure (struct <range>) #!rest (list-of (struct <range>)) -> boolean))
 (define (range-any pred r . rs)
   (assume (procedure? pred))
   (assume (range? r))
@@ -280,6 +312,7 @@
              r
              rs)))
 
+(: range-every (procedure (struct <range>) #!rest (list-of (struct <range>)) -> boolean))
 (define (range-every pred r . rs)
   (assume (procedure? pred))
   (assume (range? r))
@@ -293,14 +326,20 @@
                 r
                 rs)))))
 
+(: range-map (procedure #!rest (list-of (struct <range>))
+              -> (struct <range>)))
 (define (range-map proc . rs)
   (assume (pair? rs))
   (vector-range (apply range-map->vector proc rs)))
 
+(: range-filter-map (procedure #!rest (list-of (struct <range>))
+                     -> (struct <range>)))
 (define (range-filter-map proc . rs)
   (assume (pair? rs))
   (vector-range (list->vector (apply range-filter-map->list proc rs))))
 
+(: range-map->list (procedure (struct <range>) #!rest (list-of (struct <range>))
+                    -> list))
 (define (range-map->list proc r . rs)
   (assume (procedure? proc))
   (if (null? rs)                        ; one-range fast path
@@ -311,6 +350,8 @@
              r
              rs)))
 
+(: range-filter-map->list (procedure (struct <range>) #!rest (list-of (struct <range>))
+                           -> list))
 (define (range-filter-map->list proc r . rs)
   (if (null? rs)                        ; one-range fast path
       (%range-fold-right-1 (lambda (res x)
@@ -327,6 +368,8 @@
              r
              rs)))
 
+(: range-map->vector (procedure (struct <range>) #!rest (list-of (struct <range>))
+                      -> vector))
 (define (range-map->vector proc r . rs)
   (assume (procedure? proc))
   (assume (range? r))
@@ -340,6 +383,8 @@
                                           rs*)))
                        (short-minimum (map range-length rs*))))))
 
+(: range-for-each (procedure (struct <range>) #!rest (list-of (struct <range>))
+                   -> undefined))
 (define (range-for-each proc r . rs)
   (assume (procedure? proc))
   (assume (range? r))
@@ -359,6 +404,8 @@
                                   rs*))
                  (lp (+ i 1))))))))
 
+(: %range-fold-1 (procedure * (struct <range>)
+                  -> *))
 (define (%range-fold-1 proc nil r)
   (assume (procedure? proc))
   (assume (range? r))
@@ -368,6 +415,8 @@
           acc
           (lp (+ i 1) (proc acc (%range-ref-no-check r i)))))))
 
+(: range-fold (or (procedure * (struct <range>) -> *)
+                  (procedure * #!rest (list-of (struct <range>)) -> *)))
 (define range-fold
   (case-lambda
     ((proc nil r)                       ; one-range fast path
@@ -384,6 +433,7 @@
                                         (%range-ref-no-check r i))
                                       rs)))))))))
 
+(: %range-fold-right-1 (procedure * (struct <range>) -> *))
 (define (%range-fold-right-1 proc nil r)
   (assume (procedure? proc))
   (assume (range? r))
@@ -393,6 +443,8 @@
           nil
           (proc (rec (+ i 1)) (%range-ref-no-check r i))))))
 
+(: range-fold-right (or (procedure * (struct <range>) -> *)
+                        (procedure * #!rest (list-of (struct <range>)) -> *)))
 (define range-fold-right
   (case-lambda
     ((proc nil r)                       ; one-range fast path
@@ -408,9 +460,11 @@
                     (rec (+ i 1))
                     (map (lambda (r) (%range-ref-no-check r i)) rs))))))))
 
+(: range-filter (procedure (struct <range>) -> (struct <range>)))
 (define (range-filter pred r)
   (vector-range (list->vector (range-filter->list pred r))))
 
+(: range-filter->list (procedure (struct <range>) -> list))
 (define (range-filter->list pred r)
   (assume (procedure? pred))
   (assume (range? r))
@@ -419,9 +473,11 @@
                     '()
                     r))
 
+(: range-remove (procedure (struct <range>) -> (struct <range>)))
 (define (range-remove pred r)
   (vector-range (list->vector (range-remove->list pred r))))
 
+(: range-remove->list (procedure (struct <range>) -> list))
 (define (range-remove->list pred r)
   (assume (procedure? pred))
   (assume (range? r))
@@ -430,6 +486,7 @@
                     '()
                     r))
 
+(: range-reverse ((struct <range>) -> (struct <range>)))
 (define (range-reverse r)
   (assume (range? r))
   (%range-maybe-vectorize
@@ -439,6 +496,10 @@
                 ((range-indexer r) (- (range-length r) 1 n)))
               (+ 1 (range-complexity r)))))
 
+(: range-append (or (-> (struct <range>))
+                    ((struct <range>) -> (struct <range>))
+                    ((struct <range>) (struct <range>) -> (struct <range>))
+                    (#!rest (list-of (struct <range>)) -> (struct <range>))))
 (define range-append
   (case-lambda
     (() (raw-range 0 0 identity 0))
@@ -468,6 +529,8 @@
 
 ;;;; Searching
 
+(: range-index (procedure (struct <range>) #!rest (list-of (struct <range>))
+                -> (or fixnum false)))
 (define (range-index pred r . rs)
   (assume (procedure? pred))
   (assume (range? r))
@@ -487,6 +550,8 @@
                  i)
                 (else (lp (+ i 1))))))))
 
+(: range-index-right (procedure (struct <range>) #!rest (list-of (struct <range>))
+                      -> (or fixnum false)))
 (define (range-index-right pred r . rs)
   (assume (procedure? pred))
   (assume (range? r))
@@ -507,21 +572,25 @@
                  i)
                 (else (lp (- i 1))))))))
 
+(: range-take-while (procedure (struct <range>) -> (struct <range>)))
 (define (range-take-while pred r)
   (cond ((range-index (lambda (x) (not (pred x))) r) =>
          (lambda (i) (range-take r i)))
         (else r)))
 
+(: range-take-while-right (procedure (struct <range>) -> (struct <range>)))
 (define (range-take-while-right pred r)
   (cond ((range-index-right (lambda (x) (not (pred x))) r) =>
          (lambda (i) (range-take-right r (- (range-length r) 1 i))))
         (else r)))
 
+(: range-drop-while (procedure (struct <range>) -> (struct <range>)))
 (define (range-drop-while pred r)
   (cond ((range-index (lambda (x) (not (pred x))) r) =>
          (lambda (i) (range-drop r i)))
         (else (%empty-range-from r))))
 
+(: range-drop-while-right (procedure (struct <range>) -> (struct <range>)))
 (define (range-drop-while-right pred r)
   (cond ((range-index-right (lambda (x) (not (pred x))) r) =>
          (lambda (i) (range-drop-right r (- (range-length r) 1 i))))
@@ -529,24 +598,29 @@
 
 ;;;; Conversion
 
+(: range->list ((struct <range>) -> list))
 (define (range->list r)
   (range-fold-right xcons '() r))
 
+(: range->vector ((struct <range>) -> vector))
 (define (range->vector r)
   (assume (range? r))
   (vector-unfold (lambda (i) (%range-ref-no-check r i))
                  (range-length r)))
 
+(: range->string ((struct <range>) -> string))
 (define (range->string r)
   (assume (range? r))
   (let ((res (make-string (range-length r))))
     (range-fold (lambda (i c) (string-set! res i c) (+ i 1)) 0 r)
     res))
 
+(: vector->range (vector -> (struct <range>)))
 (define (vector->range vec)
   (assume (vector? vec))
   (vector-range (vector-copy vec)))
 
+(: range->generator ((struct <range>) -> procedure))
 (define (range->generator r)
   (assume (range? r))
   (let ((i 0) (len (range-length r)))
