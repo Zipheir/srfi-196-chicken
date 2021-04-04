@@ -34,12 +34,15 @@
 (define (sum ns) (reduce + 0 ns))
 
 (define-record-type <range>
-  (raw-range start-index length indexer complexity)
+  (raw-range start-index
+             length
+             indexer
+             complexity)
   range?
-  (start-index range-start-index)
-  (length range-length)
-  (indexer range-indexer)
-  (complexity range-complexity))
+  (start-index range-start-index : fixnum)
+  (length range-length : fixnum)
+  (indexer range-indexer : (fixnum -> *))
+  (complexity range-complexity : fixnum))
 
 ;; Maximum number of indexers to compose with range-reverse and
 ;; range-append before a range is expanded with vector-range.

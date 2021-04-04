@@ -22,10 +22,12 @@
   (import (scheme)
           (chicken base)
           (chicken module)
+          (chicken type)
+          (chicken platform)
           (only (srfi 1) reduce unfold xcons every concatenate)
           (only (srfi 133) vector-copy string->vector vector-unfold)
-          (srfi 145))
-  (import (chicken platform))
+          (srfi 145)
+          (typed-records))
 
   (register-feature! 'srfi-196)
 
