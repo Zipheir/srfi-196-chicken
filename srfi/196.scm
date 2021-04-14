@@ -25,7 +25,7 @@
 
 ;; Find the least element of a list non-empty of naturals. If an element
 ;; is zero, returns it immediately.
-(: short-minimum ((list-of fixnum) -> fixnum))
+(: short-minimum ((list-of integer) -> integer))
 (define (short-minimum ns)
   (call-with-current-continuation
    (lambda (return)
@@ -34,7 +34,7 @@
              0
              ns))))
 
-(: sum ((list-of fixnum) -> fixnum))
+(: sum ((list-of integer) -> integer))
 (define (sum ns) (reduce + 0 ns))
 
 (define-record-type <range>
@@ -43,9 +43,9 @@
              indexer
              complexity)
   range?
-  (start-index range-start-index : fixnum)
-  (length range-length : fixnum)
-  (indexer range-indexer : (fixnum -> *))
+  (start-index range-start-index : integer)
+  (length range-length : integer)
+  (indexer range-indexer : (integer -> *))
   (complexity range-complexity : fixnum))
 
 ;; Maximum number of indexers to compose with range-reverse and
@@ -63,13 +63,13 @@
 (define (threshold? k)
   (> k %range-maximum-complexity))
 
-(: %range-valid-index? ((struct <range>) fixnum -> boolean))
+(: %range-valid-index? ((struct <range>) integer -> boolean))
 (define (%range-valid-index? r index)
   (and (exact-natural? index)
        (< index (range-length r))))
 
 ;; As the previous check, but bound is assumed to be exclusive.
-(: %range-valid-bound? ((struct <range>) * -> boolean))
+(: %range-valid-bound? ((struct <range>) integer -> boolean))
 (define (%range-valid-bound? r bound)
   (and (exact-natural? bound)
        (<= bound (range-length r))))
@@ -77,14 +77,14 @@
 ;;;; Constructors
 
 ;; The primary range constructor does some extra consistency checking.
-(: range (fixnum (fixnum -> *) -> (struct <range>)))
+(: range (integer (integer -> *) -> (struct <range>)))
 (define (range length indexer)
   (assume (exact-natural? length))
   (assume (procedure? indexer))
   (raw-range 0 length indexer 0))
 
-(: numeric-range (or (fixnum fixnum -> (struct <range>))
-                     (fixnum fixnum fixnum -> (struct <range>))))
+(: numeric-range (or (integer integer -> (struct <range>))
+                     (integer integer integer -> (struct <range>))))
 (define numeric-range
   (case-lambda
     ((start end) (numeric-range start end 1))
@@ -106,9 +106,9 @@
        (raw-range 0 len (lambda (n) (+ start (* n step))) 0)))))
 
 ;; TODO: Consider possible round-off bugs.
-(: iota-range (or (fixnum -> (struct <range>))
-                  (fixnum fixnum -> (struct <range>))
-                  (fixnum fixnum fixnum -> (struct <range>))))
+(: iota-range (or (integer -> (struct <range>))
+                  (integer integer -> (struct <range>))
+                  (integer integer integer -> (struct <range>))))
 (define iota-range
   (case-lambda
     ((len) (iota-range len 0 1))
@@ -149,7 +149,7 @@
 
 ;;;; Accessors
 
-(: range-ref ((struct <range>) fixnum -> *))
+(: range-ref ((struct <range>) integer -> *))
 (define (range-ref r index)
   (assume (range? r))
   (assume (%range-valid-index? r index) "range-ref: invalid index")
@@ -202,7 +202,7 @@
 
 ;;;; Iteration
 
-(: range-split-at ((struct <range>) fixnum -> (struct <range>) (struct <range>)))
+(: range-split-at ((struct <range>) integer -> (struct <range>) (struct <range>)))
 (define (range-split-at r index)
   (assume (range? r))
   (assume (%range-valid-bound? r index))
@@ -213,7 +213,7 @@
            (values (raw-range (range-start-index r) index indexer k)
                    (raw-range index (- (range-length r) index) indexer k))))))
 
-(: subrange ((struct <range>) fixnum fixnum -> (struct <range>)))
+(: subrange ((struct <range>) integer integer -> (struct <range>)))
 (define (subrange r start end)
   (assume (range? r))
   (assume (%range-valid-index? r start) "subrange: invalid start index")
@@ -226,7 +226,7 @@
                  (range-indexer r)
                  (range-complexity r))))
 
-(: range-segment ((struct <range>) fixnum -> (list-of (struct <range>))))
+(: range-segment ((struct <range>) integer -> (list-of (struct <range>))))
 (define (range-segment r k)
   (assume (range? r))
   (assume (and (exact-integer? k) (positive? k)))
@@ -242,7 +242,7 @@
             (lambda (i) (+ i k))
             0)))
 
-(: range-take ((struct <range>) fixnum -> (struct <range>)))
+(: range-take ((struct <range>) integer -> (struct <range>)))
 (define (range-take r count)
   (assume (range? r))
   (assume (%range-valid-bound? r count) "range-take: invalid count")
@@ -253,7 +253,7 @@
                          (range-indexer r)
                          (range-complexity r)))))
 
-(: range-take-right ((struct <range>) fixnum -> (struct <range>)))
+(: range-take-right ((struct <range>) integer -> (struct <range>)))
 (define (range-take-right r count)
   (assume (range? r))
   (assume (%range-valid-bound? r count)
@@ -266,7 +266,7 @@
                     (range-indexer r)
                     (range-complexity r)))))
 
-(: range-drop ((struct <range>) fixnum -> (struct <range>)))
+(: range-drop ((struct <range>) integer -> (struct <range>)))
 (define (range-drop r count)
   (assume (range? r))
   (assume (%range-valid-bound? r count) "range-drop: invalid count")
@@ -277,7 +277,7 @@
                  (range-indexer r)
                  (range-complexity r))))
 
-(: range-drop-right ((struct <range>) fixnum -> (struct <range>)))
+(: range-drop-right ((struct <range>) integer -> (struct <range>)))
 (define (range-drop-right r count)
   (assume (range? r))
   (assume (%range-valid-bound? r count) "range-drop: invalid count")
@@ -288,7 +288,7 @@
                  (range-indexer r)
                  (range-complexity r))))
 
-(: range-count (procedure (struct <range>) #!rest (list-of (struct <range>)) -> fixnum))
+(: range-count (procedure (struct <range>) #!rest (list-of (struct <range>)) -> integer))
 (define (range-count pred r . rs)
   (assume (procedure? pred))
   (assume (range? r))
@@ -531,7 +531,7 @@
 ;;;; Searching
 
 (: range-index (procedure (struct <range>) #!rest (list-of (struct <range>))
-                -> (or fixnum false)))
+                -> (or integer false)))
 (define (range-index pred r . rs)
   (assume (procedure? pred))
   (assume (range? r))
@@ -552,7 +552,7 @@
                 (else (lp (+ i 1))))))))
 
 (: range-index-right (procedure (struct <range>) #!rest (list-of (struct <range>))
-                      -> (or fixnum false)))
+                      -> (or integer false)))
 (define (range-index-right pred r . rs)
   (assume (procedure? pred))
   (assume (range? r))
