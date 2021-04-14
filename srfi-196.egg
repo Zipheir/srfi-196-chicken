@@ -1,7 +1,7 @@
 ((author "John Cowan & Wolfgang Corcoran-Mathe")
  (maintainer "Wolfgang Corcoran-Mathe")
  (synopsis "SRFI-196: Range Objects")
- (version "0.2")
+ (version "0.2.1")
  (dependencies srfi-1 srfi-133 srfi-145 typed-records)
  (category data)
  (test-dependencies test)
