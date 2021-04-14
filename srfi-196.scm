@@ -1,4 +1,4 @@
-(module (srfi 196) ()
+(module (srfi 196)
   ;; Constructors
   (range numeric-range iota-range vector-range string-range range-append
 
